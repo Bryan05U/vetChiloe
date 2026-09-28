@@ -1,184 +1,442 @@
-.counter {
-  font-size: 16px;
-  padding: 5px 10px;
-  border-radius: 5px;
-  color: var(--accent);
-  background: var(--accent-bg);
-  border: 2px solid transparent;
-  transition: border-color 0.3s;
-  margin-bottom: 24px;
+/* ====================================
+   FORZAR PANTALLA COMPLETA (SIN MÁRGENES LATERALES)
+   ==================================== */
 
-  &:hover {
-    border-color: var(--accent-border);
-  }
-  &:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 2px;
-  }
+html, body, #root, .App, .app-container, .contenedor-principal {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
 }
 
-.hero {
-  position: relative;
+/* ====================================
+   PALETA ROSADO PASTEL / SOFT PINK
+   ==================================== */
 
-  .base,
-  .framework,
-  .vite {
-    inset-inline: 0;
-    margin: 0 auto;
-  }
-
-  .base {
-    width: 170px;
-    position: relative;
-    z-index: 0;
-  }
-
-  .framework,
-  .vite {
-    position: absolute;
-  }
-
-  .framework {
-    z-index: 1;
-    top: 34px;
-    height: 28px;
-    transform: perspective(2000px) rotateZ(300deg) rotateX(44deg) rotateY(39deg)
-      scale(1.4);
-  }
-
-  .vite {
-    z-index: 0;
-    top: 107px;
-    height: 26px;
-    width: auto;
-    transform: perspective(2000px) rotateZ(300deg) rotateX(40deg) rotateY(39deg)
-      scale(0.8);
-  }
+:root {
+  --bg-pastel: #faf4f5;
+  --card-bg: #ffffff;
+  --pink-main: #e891a8;
+  --pink-hover: #d87590;
+  --pink-light: #f7e6eb;
+  --pink-border: #f1cbd6;
+  --text-primary: #4a3e43;
+  --text-muted: #8c7a82;
 }
 
-#center {
+body {
+  background-color: var(--bg-pastel);
+  color: var(--text-primary);
+  font-family: system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ====================================
+   CONTENEDOR PRINCIPAL
+   ==================================== */
+
+.app-container, .contenedor-principal {
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  gap: 25px;
-  place-content: center;
-  place-items: center;
+}
+
+.main-content, .area-contenido {
   flex-grow: 1;
-
-  @media (max-width: 1024px) {
-    padding: 32px 20px 24px;
-    gap: 18px;
-  }
+  width: 100% !important;
+  max-width: 100% !important;
+  padding: 1.5rem 2rem !important; /* Margen interno suave */
+  box-sizing: border-box !important;
 }
 
-#next-steps {
+/* ====================================
+   BARRA DE NAVEGACIÓN (NAVBAR)
+   ==================================== */
+
+.navbar {
   display: flex;
-  border-top: 1px solid var(--border);
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: var(--card-bg);
+  border-bottom: 2px solid var(--pink-border);
+  box-shadow: 0 4px 12px rgba(232, 145, 168, 0.08);
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.navbar-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo-icon {
+  font-size: 1.6rem;
+}
+
+.navbar-logo h2 {
+  margin: 0;
+  font-size: 1.4rem;
+  color: var(--pink-hover);
+  font-weight: 700;
+}
+
+.navbar-links {
+  display: flex;
+  gap: 10px;
+}
+
+.nav-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-muted);
+  padding: 8px 18px;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.nav-btn:hover {
+  background-color: var(--pink-light);
+  color: var(--pink-hover);
+}
+
+.nav-btn.activo {
+  background-color: var(--pink-main);
+  color: white;
+  box-shadow: 0 3px 8px rgba(232, 145, 168, 0.3);
+}
+
+/* ====================================
+   DASHBOARD CON TABLAS ANCHAS (HOME)
+   ==================================== */
+
+.home-dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  width: 100% !important;
+}
+
+.bloque-dashboard {
+  background-color: var(--card-bg);
+  border: 2px solid var(--pink-border);
+  border-radius: 20px;
+  padding: 1.8rem;
+  box-shadow: 0 8px 20px rgba(216, 117, 144, 0.08);
   text-align: left;
-
-  & > div {
-    flex: 1 1 0;
-    padding: 32px;
-    @media (max-width: 1024px) {
-      padding: 24px 20px;
-    }
-  }
-
-  .icon {
-    margin-bottom: 16px;
-    width: 22px;
-    height: 22px;
-  }
-
-  @media (max-width: 1024px) {
-    flex-direction: column;
-    text-align: center;
-  }
+  width: 100% !important;
+  box-sizing: border-box !important;
 }
 
-#docs {
-  border-right: 1px solid var(--border);
-
-  @media (max-width: 1024px) {
-    border-right: none;
-    border-bottom: 1px solid var(--border);
-  }
-}
-
-#next-steps ul {
-  list-style: none;
-  padding: 0;
+.cabecera-bloque {
   display: flex;
-  gap: 8px;
-  margin: 32px 0 0;
-
-  .logo {
-    height: 18px;
-  }
-
-  a {
-    color: var(--text-h);
-    font-size: 16px;
-    border-radius: 6px;
-    background: var(--social-bg);
-    display: flex;
-    padding: 6px 12px;
-    align-items: center;
-    gap: 8px;
-    text-decoration: none;
-    transition: box-shadow 0.3s;
-
-    &:hover {
-      box-shadow: var(--shadow);
-    }
-    .button-icon {
-      height: 18px;
-      width: 18px;
-    }
-  }
-
-  @media (max-width: 1024px) {
-    margin-top: 20px;
-    flex-wrap: wrap;
-    justify-content: center;
-
-    li {
-      flex: 1 1 calc(50% - 8px);
-    }
-
-    a {
-      width: 100%;
-      justify-content: center;
-      box-sizing: border-box;
-    }
-  }
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid var(--pink-light);
+  padding-bottom: 12px;
+  margin-bottom: 1.2rem;
 }
 
-#spacer {
-  height: 88px;
-  border-top: 1px solid var(--border);
-  @media (max-width: 1024px) {
-    height: 48px;
-  }
+.cabecera-bloque h2 {
+  margin: 0;
+  color: var(--pink-hover);
+  font-size: 1.4rem;
 }
 
-.ticks {
+.badge-fecha, .badge-total {
+  background-color: var(--pink-light);
+  color: var(--pink-hover);
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+/* TABLAS A PANTALLA COMPLETA */
+.tabla-responsive {
+  width: 100% !important;
+  overflow-x: auto;
+}
+
+.tabla-dashboard {
+  width: 100% !important;
+  border-collapse: collapse;
+}
+
+.tabla-dashboard th {
+  text-align: left;
+  padding: 12px 14px;
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  border-bottom: 2px solid var(--pink-border);
+  background-color: var(--bg-pastel);
+}
+
+.tabla-dashboard td {
+  padding: 14px;
+  border-bottom: 1px solid var(--pink-light);
+  font-size: 0.92rem;
+  color: var(--text-primary);
+  vertical-align: middle;
+}
+
+.col-destacada {
+  color: var(--pink-hover);
+}
+
+.nombre-paciente {
+  font-weight: 700;
+  color: var(--text-primary);
+  font-size: 1rem;
+}
+
+.especie-tag {
+  background-color: var(--pink-light);
+  color: var(--pink-hover);
+  padding: 3px 10px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.texto-contacto {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+
+.badge-estado {
+  background-color: #ebf8ff;
+  color: #2b6cb0;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.tiempo-texto {
+  color: var(--text-muted);
+  font-size: 0.88rem;
+}
+
+.cuidados-texto {
+  font-size: 0.85rem;
+  color: #c53030;
+  font-style: italic;
+}
+
+.btn-historial {
+  background-color: var(--pink-main);
+  color: white;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.btn-historial:hover {
+  background-color: var(--pink-hover);
+}
+
+/* ====================================
+   GRILLA DE PACIENTES (CATÁLOGO)
+   ==================================== */
+
+.cuadricula-tarjetas {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 20px;
+  justify-items: center;
+}
+
+.tarjeta-contenedor-fijo {
+  background-color: transparent;
+  width: 230px;
+  height: 320px;
+  perspective: 1000px;
+}
+
+.tarjeta-inner {
   position: relative;
   width: 100%;
+  height: 100%;
+  text-align: center;
+  transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+  transform-style: preserve-3d;
+  border-radius: 18px;
+  box-shadow: 0 8px 20px rgba(216, 117, 144, 0.12);
+}
 
-  &::before,
-  &::after {
-    content: '';
-    position: absolute;
-    top: -4.5px;
-    border: 5px solid transparent;
-  }
+.tarjeta-contenedor-fijo:hover .tarjeta-inner {
+  transform: rotateY(180deg);
+}
 
-  &::before {
-    left: 0;
-    border-left-color: var(--border);
-  }
-  &::after {
-    right: 0;
-    border-right-color: var(--border);
-  }
+.tarjeta-front, .tarjeta-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  border-radius: 18px;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.tarjeta-front {
+  background-color: var(--card-bg);
+  border: 2px solid var(--pink-border);
+}
+
+.foto-completa {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.tarjeta-back {
+  background-color: var(--card-bg);
+  color: var(--text-primary);
+  transform: rotateY(180deg);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid var(--pink-border);
+}
+
+.tarjeta-back h3 {
+  margin-top: 0;
+  color: var(--pink-hover);
+  font-size: 1.4rem;
+  margin-bottom: 0.8rem;
+}
+
+.tarjeta-back p {
+  margin: 0.4rem 0;
+  font-size: 0.95rem;
+}
+
+.btn-detalle {
+  background-color: var(--pink-main);
+  color: white;
+  border: none;
+  padding: 0.65rem 1.2rem;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-top: 1.2rem;
+  font-weight: 600;
+}
+
+.btn-detalle:hover {
+  background-color: var(--pink-hover);
+}
+
+/* ====================================
+   PESTAÑA FORMULARIO DE REGISTRO
+   ==================================== */
+
+.seccion-formulario-pantalla {
+  background-color: var(--card-bg);
+  border: 2px solid var(--pink-border);
+  border-radius: 20px;
+  padding: 2.5rem;
+  max-width: 500px;
+  margin: 0 auto;
+  text-align: left;
+  box-shadow: 0 10px 25px rgba(216, 117, 144, 0.08);
+}
+
+.cabecera-form h2 {
+  color: var(--pink-hover);
+  margin-top: 0;
+  margin-bottom: 0.3rem;
+  font-size: 1.6rem;
+  text-align: center;
+}
+
+.cabecera-form p {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.form-completo {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.campo label {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.campo input {
+  padding: 0.75rem 1rem;
+  border: 1.5px solid var(--pink-border);
+  border-radius: 10px;
+  font-size: 0.92rem;
+  background-color: var(--bg-pastel);
+  outline: none;
+}
+
+.campo input:focus {
+  border-color: var(--pink-main);
+  background-color: #ffffff;
+}
+
+.acciones-form {
+  margin-top: 1rem;
+}
+
+.btn-guardar-paciente {
+  width: 100%;
+  background-color: var(--pink-main);
+  color: white;
+  border: none;
+  padding: 0.8rem;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  box-shadow: 0 4px 12px rgba(232, 145, 168, 0.35);
+}
+
+.btn-guardar-paciente:hover {
+  background-color: var(--pink-hover);
+}
+
+/* ====================================
+   FOOTER
+   ==================================== */
+
+.footer {
+  text-align: center;
+  padding: 1.5rem;
+  background-color: var(--card-bg);
+  border-top: 1px solid var(--pink-border);
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  width: 100% !important;
+  box-sizing: border-box !important;
 }

@@ -1,16 +1,31 @@
-// Un componente en React es una función que retorna JSX
-// `props` (propiedades) es un objeto que contiene los datos del componentes
+import React from 'react';
 
-function TarjetaPaciente(props) {
-  const { paciente } = props;  // aquí extraemos la información del paciente desde las props
+function TarjetaPaciente({ paciente }) {
   return (
-    <div className="tarjeta">
-      <h3>{paciente.nombre}</h3>
-      <p><strong>Número Paciente:</strong> {paciente.numero_atencion}</p>
-      
-      {/* Botón visual para futura interactividad */}
-      <button className="btn-detalle">Ver Ficha Clínica</button>
+    <div className="tarjeta-contenedor-fijo">
+      <div className="tarjeta-inner">
+        
+        {/* PARTE FRONTAL: Foto Completa */}
+        <div className="tarjeta-front">
+          <img 
+            src={paciente.foto} 
+            alt={`Foto de ${paciente.nombre}`} 
+            className="foto-completa" 
+          />
+        </div>
+
+        {/* PARTE TRASERA: Datos del Paciente */}
+        <div className="tarjeta-back">
+          <h3>{paciente.nombre}</h3>
+          {paciente.especie && <p><strong>Especie:</strong> {paciente.especie}</p>}
+          <p><strong>N° Atención:</strong> {paciente.numero_atencion}</p>
+          
+          <button className="btn-detalle">Ver Ficha Clínica</button>
+        </div>
+
+      </div>
     </div>
   );
 }
+
 export default TarjetaPaciente;
