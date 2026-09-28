@@ -4,7 +4,6 @@ function Navbar({ pestanaActiva, setPestanaActiva }) {
   return (
     <nav className="navbar">
       <div className="navbar-logo">
-        <span className="logo-icon">🐾</span>
         <h2>VetChiloé</h2>
       </div>
       <div className="navbar-links">
@@ -21,10 +20,22 @@ function Navbar({ pestanaActiva, setPestanaActiva }) {
           Pacientes
         </button>
         <button 
+          className={`nav-btn ${pestanaActiva === 'hospitalizacion' ? 'activo' : ''}`}
+          onClick={() => setPestanaActiva('hospitalizacion')}
+        >
+          Hospitalización
+        </button>
+        <button 
+          className={`nav-btn ${pestanaActiva === 'historial' ? 'activo' : ''}`}
+          onClick={() => setPestanaActiva('historial')}
+        >
+          Historial Clínico
+        </button>
+        <button 
           className={`nav-btn ${pestanaActiva === 'registro' ? 'activo' : ''}`}
           onClick={() => setPestanaActiva('registro')}
         >
-          + Registrar
+          + Nuevo Paciente
         </button>
       </div>
     </nav>

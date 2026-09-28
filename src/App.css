@@ -440,3 +440,109 @@ body {
   width: 100% !important;
   box-sizing: border-box !important;
 }
+/* OPCIONES DE INGRESO */
+.menu-tipo-ingreso {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.btn-opcion-ingreso {
+  background-color: var(--bg-pastel);
+  color: var(--text-primary);
+  border: 2px solid var(--pink-border);
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex: 1;
+  min-width: 200px;
+}
+
+.btn-opcion-ingreso:hover {
+  background-color: var(--pink-light);
+  border-color: var(--pink-main);
+}
+
+.btn-opcion-ingreso.activo {
+  background-color: var(--pink-main);
+  color: white;
+  border-color: var(--pink-main);
+  box-shadow: 0 4px 12px rgba(232, 145, 168, 0.35);
+}
+
+.bloque-subform {
+  margin-top: 1.2rem;
+  border-top: 1px dashed var(--pink-border);
+  padding-top: 1rem;
+}
+
+.bloque-subform h4 {
+  margin: 0 0 1rem 0;
+  color: var(--pink-hover);
+}
+
+select {
+  padding: 0.75rem 1rem;
+  border: 1.5px solid var(--pink-border);
+  border-radius: 10px;
+  font-size: 0.92rem;
+  background-color: var(--bg-pastel);
+  outline: none;
+  color: var(--text-primary);
+}
+
+select:focus {
+  border-color: var(--pink-main);
+  background-color: #ffffff;
+}
+/* ESTILOS HISTORIAL CLÍNICO */
+.grid-historial-layout {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 20px;
+  margin-top: 1.5rem;
+}
+
+.selector-paciente-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 1rem;
+}
+
+.selector-paciente-box select {
+  flex-grow: 1;
+}
+
+.tarjeta-atencion {
+  background-color: var(--bg-pastel);
+  border: 1.5px solid var(--pink-border);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.atencion-header {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--pink-border);
+  padding-bottom: 6px;
+  margin-bottom: 8px;
+  color: var(--pink-hover);
+}
+
+.fecha-tag {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.texto-vacio {
+  color: var(--text-muted);
+  font-style: italic;
+  margin-top: 1rem;
+}
