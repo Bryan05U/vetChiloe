@@ -36,6 +36,7 @@ function FichaClinica({ paciente, onVolver }) {
             <li><strong>Edad:</strong> {paciente.edad}</li>
             <li><strong>Peso:</strong> {paciente.peso}</li>
             <li><strong>Dueño/a:</strong> {paciente.duenio}</li>
+            <li><strong>RUT dueño/a:</strong> {paciente.rutDuenio || 'No registrado'}</li>
             <li><strong>N° atención:</strong> {paciente.numero_atencion}</li>
           </ul>
         </div>

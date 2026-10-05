@@ -49,13 +49,15 @@ function App() {
   const [pacienteSeleccionado, setPacienteSeleccionado] = useState(null);
 
   const agregarPaciente = (datos) => {
+    const edad = Number(datos.edad);
+    const peso = Number(datos.peso);
+    if (!Number.isFinite(edad) || edad < 0 || !Number.isFinite(peso) || peso < 0) return;
+
     const nuevoPaciente = {
       ...datos,
       id: Date.now(),
-      edad: `${datos.edad} años`,
-      raza: 'No especificada',
-      peso: 'No registrado',
-      duenio: 'No registrado',
+      edad: `${edad} años`,
+      peso: `${peso} kg`,
       numero_atencion: `2026-N${pacientes.length + 1}`,
       emoji: datos.especie === 'Gato' ? '🐱' : datos.especie === 'Perro' ? '🐶' : '🐾',
       historial: [{ fecha: new Date().toISOString().slice(0, 10), detalle: 'Paciente registrado.' }],

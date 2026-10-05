@@ -3,7 +3,11 @@ import { useState } from 'react';
 const formularioInicial = {
   nombre: '',
   especie: 'Perro',
+  raza: '',
   edad: '',
+  peso: '',
+  duenio: '',
+  rutDuenio: '',
   diagnostico: '',
 };
 
@@ -12,7 +16,8 @@ function FormularioPaciente({ onAgregarPaciente }) {
 
   const actualizarCampo = (evento) => {
     const { name, value } = evento.target;
-    setDatos((datosActuales) => ({ ...datosActuales, [name]: value }));
+    const valorCampo = name === 'rutDuenio' ? value.replace(/[^0-9.-]/g, '') : value;
+    setDatos((datosActuales) => ({ ...datosActuales, [name]: valorCampo }));
   };
 
   const manejarEnvio = (evento) => {
@@ -36,8 +41,34 @@ function FormularioPaciente({ onAgregarPaciente }) {
         </select>
       </label>
       <label>
+        Raza
+        <input name="raza" value={datos.raza} onChange={actualizarCampo} required />
+      </label>
+      <label>
         Edad
         <input name="edad" type="number" min="0" value={datos.edad} onChange={actualizarCampo} required />
+      </label>
+      <label>
+        Peso (kg)
+        <input name="peso" type="number" min="0" step="0.1" value={datos.peso} onChange={actualizarCampo} required />
+      </label>
+      <label>
+        Nombre del dueño/a
+        <input name="duenio" value={datos.duenio} onChange={actualizarCampo} required />
+      </label>
+      <label>
+        RUT del dueño/a
+        <input
+          name="rutDuenio"
+          value={datos.rutDuenio}
+          onChange={actualizarCampo}
+          placeholder="12.345.678-9"
+          pattern="[0-9]{1,2}\.[0-9]{3}\.[0-9]{3}-[0-9]"
+          maxLength="12"
+          title="Ingresa el RUT en formato 12.345.678-9, usando solo números, puntos y guion."
+          autoComplete="off"
+          required
+        />
       </label>
       <label className="campo-diagnostico">
         Diagnóstico
