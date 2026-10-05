@@ -1,7 +1,4 @@
 import { useState } from 'react';
-import ReactCardFlipModule from 'react-card-flip';
-
-const ReactCardFlip = ReactCardFlipModule.default ?? ReactCardFlipModule;
 
 // FichaClinica muestra UNA mascota en una tarjeta giratoria.
 // Props:
@@ -21,7 +18,7 @@ function FichaClinica({ paciente, onVolver }) {
         {volteada ? 'Haz clic en la tarjeta para volver a los datos generales' : 'Haz clic en la tarjeta para ver los datos clínicos'}
       </p>
 
-      <ReactCardFlip isFlipped={volteada} flipDirection="horizontal">
+      <div className={`ficha-flip ${volteada ? 'ficha-flip-volteada' : ''}`}>
         {/* ANVERSO: foto y datos generales */}
         <div className="ficha-cara" onClick={alternarTarjeta} role="button" tabIndex={0}
              onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && alternarTarjeta()}>
@@ -57,7 +54,7 @@ function FichaClinica({ paciente, onVolver }) {
             ))}
           </ul>
         </div>
-      </ReactCardFlip>
+      </div>
     </section>
   );
 }
