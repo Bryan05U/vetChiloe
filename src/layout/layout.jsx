@@ -1,4 +1,4 @@
-import Sidebar from "../components/UX/SideBar";
+import Sidebar from "../components/ux/SideBar";
 import { useLocation, useOutlet } from "react-router-dom";
 import { AnimatePresence, motion } from "motion/react";
 

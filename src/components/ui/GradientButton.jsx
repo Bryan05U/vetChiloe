@@ -43,7 +43,7 @@ export default function GradientBorderButton({
 
         {/* Gradient border wrapper */}
         <div
-          className="relative rounded-[14px] p-[2px]"
+          className="relative rounded-xl p-0.5"
           style={{
             background: gradient,
             padding: `${borderWidth}px`,
@@ -52,11 +52,11 @@ export default function GradientBorderButton({
           {/* Inner button (clickeable en toda su área) */}
           <Tag
             {...tagProps}
-            className="relative inline-block rounded-[12px] px-8 py-4 bg-[#0f0f0f] text-white cursor-pointer overflow-hidden group"
+            className="relative inline-block rounded-xl px-8 py-4 bg-[#0f0f0f] text-white cursor-pointer overflow-hidden group"
           >
             {/* Subtle inner glow on hover */}
             <span
-              className="absolute inset-0 rounded-[12px] opacity-0 group-hover:opacity-20 transition-opacity duration-300"
+              className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-20 transition-opacity duration-300"
               style={{
                 background: `radial-gradient(ellipse at center, ${glowColor} 0%, transparent 70%)`,
               }}

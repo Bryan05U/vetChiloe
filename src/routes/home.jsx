@@ -1,5 +1,5 @@
 "use client"
-import Clock from "../components/UI/Clock"
+import Clock from "../components/ui/Clock"
 
 export default function Home() {
   return (

@@ -1,6 +1,6 @@
 // routes/Landing.jsx
-import GradientBorderButton from "../components/UI/GradientButton";
-import DotGrid from "../components/UI/DotGrid";
+import GradientBorderButton from "../components/ui/GradientButton";
+import DotGrid from "../components/ui/DotGrid";
 function Landing() {
   return (
     <main className="font-poppins relative w-full min-h-screen max-h-screen overflow-hidden landing-page">
