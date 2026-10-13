@@ -1,0 +1,35 @@
+[
+  {
+    "id": 1,
+    "nombre": "Charkicito",
+    "numero_atencion": "2026-A1",
+    "foto": "charkicito.jpg",
+    "especie": "Perro",
+    "raza": "Mestizo",
+    "edad": 3,
+    "peso": null,
+    "dueño": "Juan Peréz"
+  },
+  {
+    "id": 2,
+    "nombre": "Mercedes",
+    "numero_atencion": "2026-A2",
+    "foto": "mercedes.jpg",
+    "especie": "Gato",
+    "raza": "siamés",
+    "edad": 1,
+    "peso": null,
+    "dueño": "Benjamin Concha"
+  },
+  {
+    "id": 3,
+    "nombre": "Hannita",
+    "numero_atencion": "2026-A3",
+    "foto": "hannita.jpg",
+    "especie": "Hamster",
+    "raza": "Sirio",
+    "edad": 2,
+    "peso": null,
+    "dueño": "Hernán Díaz"
+  }
+]

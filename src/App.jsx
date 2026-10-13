@@ -1,9 +1,16 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import './App.css'
 import FlipCard from './components/FlipCard.jsx'
+import pacientesIniciales from './data/pacientes.json'
 import charkicitoImage from './assets/images/charkicito.jpg'
 import mercedesImage from './assets/images/mercedes.jpg'
 import hannitaImage from './assets/images/hannita.jpg'
+
+const imagenesPacientes = {
+  'charkicito.jpg': charkicitoImage,
+  'mercedes.jpg': mercedesImage,
+  'hannita.jpg': hannitaImage
+};
 
 const normalizarRut = rut => rut.replace(/[.\s-]/g, '').toUpperCase();
 
@@ -48,57 +55,91 @@ const calcularEdad = fecha => {
 };
 
 const formatearFecha = fecha => fecha.split('-').reverse().join('/');
+const formatearEdad = edad => typeof edad === 'number'
+  ? `${edad} ${edad === 1 ? 'año' : 'años'}`
+  : edad;
+const formatearPeso = peso => peso === null || peso === undefined || peso === ''
+  ? 'No registrado'
+  : `${peso} kg`;
 
+const normalizarTexto = texto => texto
+  .normalize('NFD')
+  .replace(/[\u0300-\u036f]/g, '')
+  .toLocaleLowerCase('es');
+
+const leerTemaGuardado = () => {
+  try {
+    return window.localStorage.getItem('vetchiloe-tema') === 'oscuro' ? 'oscuro' : 'claro';
+  } catch (error) {
+    console.error('No se pudo leer el tema guardado.', error);
+    return 'claro';
+  }
+};
 
 // Esta función muestra el estado del componente para almacenar
 // la lista de pacientes de la veterinaria
 function App() {
-  // Simulación de datos que en el futuro llegarán desde una BD
-  const [pacientes, setPacientes] = useState([
-    { 
-      id: 1, 
-      nombre: 'Charkicito', 
-      numero_atencion: '2026-A1',
-      foto: charkicitoImage,
-      especie:"Perro",
-      raza:"Mestizo",
-      edad:"3 años",
-      dueño:"Juan Peréz",
-    },
-    { 
-      id: 2, 
-      nombre: 'Mercedes', 
-      numero_atencion: '2026-A2',
-      foto: mercedesImage, // Por ahora el placeholder, luego se debe remplazar con la ruta de la imagen del paciente
-      especie:"Gato",
-      raza:"siamés",
-      edad:"1 año",
-      dueño:"Benjamin Concha",
-    },
-    {
-        id: 3,
-        nombre: 'Hannita', 
-        numero_atencion: '2026-A3',
-        foto: hannitaImage, // Por ahora el placeholder, luego se debe remplazar con la ruta de la imagen del paciente
-        especie:"Hamster",
-        raza:"Sirio",
-        edad:"2 años",
-        dueño:"Hernán Díaz",
-    }
-  ]);
+  const [pacientes, setPacientes] = useState(() => pacientesIniciales.map(paciente => ({
+    ...paciente,
+    foto: imagenesPacientes[paciente.foto]
+  })));
+  const [busqueda, setBusqueda] = useState('');
+  const [pacienteSeleccionado, setPacienteSeleccionado] = useState(null);
+  const [tema, setTema] = useState(leerTemaGuardado);
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [pasoFormulario, setPasoFormulario] = useState(1);
   const [modoEdad, setModoEdad] = useState('manual');
+  const [nombreArchivoImagen, setNombreArchivoImagen] = useState('');
+  const botonCerrarFichaRef = useRef(null);
   const [formulario, setFormulario] = useState({
     nombre: '',
     especie: '',
     raza: '',
     edad: '',
+    peso: '',
     fecha_nacimiento: '',
     dueño: '',
     rut: '',
     telefono: '',
     foto: ''
+  });
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = tema;
+    try {
+      window.localStorage.setItem('vetchiloe-tema', tema);
+    } catch (error) {
+      console.error('No se pudo guardar el tema seleccionado.', error);
+    }
+  }, [tema]);
+
+  useEffect(() => {
+    if (!pacienteSeleccionado) return undefined;
+
+    const elementoAnterior = document.activeElement;
+    botonCerrarFichaRef.current?.focus();
+    const manejarTecla = evento => {
+      if (evento.key === 'Escape') setPacienteSeleccionado(null);
+    };
+    document.addEventListener('keydown', manejarTecla);
+
+    return () => {
+      document.removeEventListener('keydown', manejarTecla);
+      if (elementoAnterior instanceof HTMLElement && elementoAnterior.isConnected) {
+        elementoAnterior.focus();
+      }
+    };
+  }, [pacienteSeleccionado]);
+
+  const pacientesFiltrados = pacientes.filter(paciente => {
+    const datosPaciente = [
+      paciente.nombre,
+      paciente.especie,
+      paciente.raza,
+      paciente.dueño,
+      paciente.numero_atencion
+    ].filter(Boolean).join(' ');
+    return normalizarTexto(datosPaciente).includes(normalizarTexto(busqueda.trim()));
   });
 
   const manejarCambio = evento => {
@@ -110,6 +151,7 @@ function App() {
     const archivo = evento.target.files[0];
     if (!archivo) return;
 
+    setNombreArchivoImagen(archivo.name);
     const lector = new FileReader();
     lector.onload = () => {
       setFormulario(actual => ({ ...actual, foto: lector.result }));
@@ -144,14 +186,16 @@ function App() {
       ...actuales,
       {
         ...formulario,
-        edad: modoEdad === 'fecha' ? calcularEdad(formulario.fecha_nacimiento) : formulario.edad,
+        edad: modoEdad === 'fecha' ? calcularEdad(formulario.fecha_nacimiento) : Number(formulario.edad),
+        peso: Number(formulario.peso),
         fecha_nacimiento: modoEdad === 'fecha' ? formulario.fecha_nacimiento : '',
         rut: rutFormateado,
         id: Date.now(),
         numero_atencion: `2026-A${actuales.length + 1}`
       }
     ]);
-    setFormulario({ nombre: '', especie: '', raza: '', edad: '', fecha_nacimiento: '', dueño: '', rut: '', telefono: '', foto: '' });
+    setFormulario({ nombre: '', especie: '', raza: '', edad: '', peso: '', fecha_nacimiento: '', dueño: '', rut: '', telefono: '', foto: '' });
+    setNombreArchivoImagen('');
     setModoEdad('manual');
     setPasoFormulario(1);
     setMostrarFormulario(false);
@@ -160,8 +204,21 @@ function App() {
   return (
     <div className="contenedor-principal">
       <header className="cabecera">
-        <h1 className='TituloPagina'>Sistema de Información - VetChiloé</h1>
-        <p>Plataforma de control y seguimiento de pacientes</p>
+        <div className="cabecera-contenido">
+          <div>
+            <h1 className='TituloPagina'>Sistema de Información - VetChiloé</h1>
+            <p>Plataforma de control y seguimiento de pacientes</p>
+          </div>
+          <button
+            className="boton-tema"
+            type="button"
+            aria-label={`Cambiar a modo ${tema === 'claro' ? 'noche' : 'día'}`}
+            aria-pressed={tema === 'oscuro'}
+            onClick={() => setTema(actual => actual === 'claro' ? 'oscuro' : 'claro')}
+          >
+            {tema === 'claro' ? '☾ Modo noche' : '☀ Modo día'}
+          </button>
+        </div>
       </header>
 
       <main>
@@ -212,7 +269,10 @@ function App() {
                 {modoEdad === 'manual' ? (
                   <label>
                     Edad del paciente
-                    <input name="edad" placeholder="Ej.: 3 años" value={formulario.edad} onChange={manejarCambio} onInput={limpiarError} onInvalid={mostrarErrorObligatorio} required />
+                    <span className="campo-con-unidad">
+                      <input name="edad" type="number" min="0" step="1" placeholder="Ej.: 3" value={formulario.edad} onChange={manejarCambio} onInput={limpiarError} onInvalid={mostrarErrorObligatorio} required />
+                      <span aria-hidden="true">años</span>
+                    </span>
                   </label>
                 ) : (
                   <label>
@@ -221,8 +281,21 @@ function App() {
                   </label>
                 )}
                 <label>
+                  Peso del paciente
+                  <span className="campo-con-unidad">
+                    <input name="peso" type="number" min="0" step="0.1" placeholder="Ej.: 4.5" value={formulario.peso} onChange={manejarCambio} onInput={limpiarError} onInvalid={mostrarErrorObligatorio} required />
+                    <span aria-hidden="true">kg</span>
+                  </span>
+                </label>
+                <label>
                   Imagen del paciente
-                  <input type="file" accept="image/*" onChange={manejarImagen} onInput={limpiarError} onInvalid={mostrarErrorObligatorio} required />
+                  <span className="selector-archivo">
+                    <input className="selector-archivo-input" type="file" accept="image/*" aria-label="Seleccionar imagen del paciente" onChange={manejarImagen} onInput={limpiarError} onInvalid={mostrarErrorObligatorio} required />
+                    <span className="selector-archivo-boton" aria-hidden="true">Seleccionar imagen</span>
+                    <span className="selector-archivo-nombre" aria-live="polite">
+                      {nombreArchivoImagen || 'Ningún archivo seleccionado'}
+                    </span>
+                  </span>
                 </label>
               </div>
               <button className="boton-guardar" type="button" onClick={avanzarPaso}>Siguiente</button>
@@ -250,49 +323,143 @@ function App() {
           </form>
         )}
 
-        <h2>Lista de Pacientes Registrados</h2>
+        <section className="seccion-pacientes" aria-labelledby="titulo-pacientes">
+          <div className="encabezado-pacientes">
+            <div>
+              <h2 id="titulo-pacientes">Lista de Pacientes Registrados</h2>
+              <p className="contador-pacientes">
+                {pacientesFiltrados.length} de {pacientes.length} pacientes
+              </p>
+            </div>
+            <label className="buscador-pacientes">
+              <span className="texto-solo-lectores">Buscar pacientes</span>
+              <span className="icono-busqueda" aria-hidden="true">⌕</span>
+              <input
+                type="search"
+                value={busqueda}
+                onChange={evento => setBusqueda(evento.target.value)}
+                placeholder="Buscar por nombre, especie o dueño..."
+              />
+              {busqueda && (
+                <button
+                  className="limpiar-busqueda"
+                  type="button"
+                  aria-label="Limpiar búsqueda"
+                  onClick={() => setBusqueda('')}
+                >
+                  ×
+                </button>
+              )}
+            </label>
+          </div>
 
-        {/* Aquí se renderizará la lista de pacientes (JSX) */}
-        <div className='cuadricula-tarjetas'>
-          {pacientes.map(paciente => (
-            <FlipCard
-              key={paciente.id}
-              width={220}
-              height={300}
-              axis="y"
-              flipOnClick={true}
-              respectReducedMotion={false}
-              front={
-                <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-                  <img
-                    src={paciente.foto}
-                    alt={paciente.nombre}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                  />
-                  <div style={{
-                    position: 'absolute', bottom: 0, left: 0, right: 0,
-                    background: 'rgba(0,0,0,0.6)', color: '#fff', padding: '8px 12px'
-                  }}>
-                    <h3 style={{ margin: 0 }}>{paciente.nombre}</h3>
+          {pacientesFiltrados.length > 0 ? (
+            <div className="tabla-pacientes-contenedor">
+              <table className="tabla-pacientes">
+                <thead>
+                  <tr>
+                    <th scope="col">Paciente</th>
+                    <th scope="col">Especie</th>
+                    <th scope="col">Raza</th>
+                    <th scope="col">Edad</th>
+                    <th scope="col">Peso</th>
+                    <th scope="col">Dueño</th>
+                    <th scope="col">N° atención</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {pacientesFiltrados.map(paciente => (
+                    <tr
+                      key={paciente.id}
+                      tabIndex={0}
+                      aria-label={`Abrir ficha de ${paciente.nombre}`}
+                      onClick={() => setPacienteSeleccionado(paciente)}
+                      onKeyDown={evento => {
+                        if (evento.key === 'Enter' || evento.key === ' ') {
+                          evento.preventDefault();
+                          setPacienteSeleccionado(paciente);
+                        }
+                      }}
+                    >
+                      <th scope="row">{paciente.nombre}</th>
+                      <td>{paciente.especie}</td>
+                      <td>{paciente.raza}</td>
+                      <td>{formatearEdad(paciente.edad)}</td>
+                      <td>{formatearPeso(paciente.peso)}</td>
+                      <td>{paciente.dueño}</td>
+                      <td>{paciente.numero_atencion}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <p className="sin-pacientes" role="status">
+              {pacientes.length === 0
+                ? 'Aún no hay pacientes registrados.'
+                : `No se encontraron pacientes para “${busqueda}”.`}
+            </p>
+          )}
+        </section>
+
+        {pacienteSeleccionado && (
+          <div
+            className="ficha-paciente-fondo"
+            onClick={evento => {
+              if (evento.target === evento.currentTarget) setPacienteSeleccionado(null);
+            }}
+          >
+            <section
+              className="ficha-paciente-dialogo"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="titulo-ficha-paciente"
+            >
+              <div className="ficha-paciente-encabezado">
+                <h2 id="titulo-ficha-paciente">Ficha de {pacienteSeleccionado.nombre}</h2>
+                <button
+                  ref={botonCerrarFichaRef}
+                  className="boton-cerrar-ficha"
+                  type="button"
+                  aria-label="Cerrar ficha del paciente"
+                  onClick={() => setPacienteSeleccionado(null)}
+                >
+                  ×
+                </button>
+              </div>
+              <FlipCard
+                width={300}
+                height={400}
+                axis="y"
+                flipOnClick={true}
+                respectReducedMotion={false}
+                background={tema === 'oscuro' ? '#17382c' : '#e4f2e9'}
+                color={tema === 'oscuro' ? '#e5f5e9' : '#183b2b'}
+                ariaLabel={`Tarjeta de ${pacienteSeleccionado.nombre}. Haz clic para ver sus datos.`}
+                front={
+                  <div className="frente-ficha-paciente">
+                    <img src={pacienteSeleccionado.foto} alt={pacienteSeleccionado.nombre} />
+                    <div className="nombre-frente-ficha">{pacienteSeleccionado.nombre}</div>
                   </div>
-                </div>
-              }
-              back={
-                <div style={{ padding: 24, textAlign: 'left' }}>
-                  <h3>{paciente.nombre}</h3>
-                  <p>Especie: {paciente.especie}</p>
-                  <p>Raza: {paciente.raza}</p>
-                  <p>Edad: {paciente.edad}</p>
-                  {paciente.fecha_nacimiento && <p>Fecha de nacimiento: {formatearFecha(paciente.fecha_nacimiento)}</p>}
-                  <p>Dueño: {paciente.dueño}</p>
-                  {paciente.rut && <p>RUT: {paciente.rut}</p>}
-                  {paciente.telefono && <p>Teléfono: {paciente.telefono}</p>}
-                  <p>N° Atención: {paciente.numero_atencion}</p>
-                </div>
-              }
-            />
-          ))}
-        </div>
+                }
+                back={
+                  <div className="reverso-ficha-paciente">
+                    <h3>{pacienteSeleccionado.nombre}</h3>
+                    <p>Especie: {pacienteSeleccionado.especie}</p>
+                    <p>Raza: {pacienteSeleccionado.raza}</p>
+                    <p>Edad: {formatearEdad(pacienteSeleccionado.edad)}</p>
+                    <p>Peso: {formatearPeso(pacienteSeleccionado.peso)}</p>
+                    {pacienteSeleccionado.fecha_nacimiento && <p>Fecha de nacimiento: {formatearFecha(pacienteSeleccionado.fecha_nacimiento)}</p>}
+                    <p>Dueño: {pacienteSeleccionado.dueño}</p>
+                    {pacienteSeleccionado.rut && <p>RUT: {pacienteSeleccionado.rut}</p>}
+                    {pacienteSeleccionado.telefono && <p>Teléfono: {pacienteSeleccionado.telefono}</p>}
+                    <p>N° Atención: {pacienteSeleccionado.numero_atencion}</p>
+                  </div>
+                }
+              />
+            </section>
+          </div>
+        )}
       </main>
     </div>
   );
