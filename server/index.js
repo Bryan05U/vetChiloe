@@ -19,8 +19,15 @@ app.use((req, res) => {
 
 // eslint-disable-next-line no-unused-vars -- Express exige 4 parámetros para reconocer un error handler
 app.use((error, req, res, next) => {
-  console.error(error);
-  res.status(500).json({ error: 'Error interno del servidor' });
+  // Un body malformado o un JSON con un primitivo suelto (null, 123, "x") lo
+  // rechaza express.json con status 400 y expose. No es culpa del servidor.
+  const status = error.status ?? error.statusCode ?? 500;
+
+  if (status >= 500) console.error(error);
+
+  res.status(status).json({
+    error: status >= 500 ? 'Error interno del servidor' : error.message,
+  });
 });
 
 app.listen(PUERTO, () => {
