@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import './FormularioPaciente.css';
-import razasPorEspecie from '../data/Razas';
 
-function FormularioPaciente({ pacientes, onAgregar, onReingresar }) {
+function FormularioPaciente({ pacientes, razasPorEspecie, onAgregar, onReingresar }) {
   // datos para buscar una mascota que ya tiene ficha
   const [idBuscado, setIdBuscado] = useState('');
   const [pacienteEncontrado, setPacienteEncontrado] = useState(null);

@@ -5,23 +5,14 @@ import FormularioPaciente from './components/FormularioPaciente';
 import DetallePaciente from './components/DetallePaciente';
 import TablaPacientes from './components/TablaPacientes';
 import BarraPestanas from './components/BarraPestanas';
+import { obtenerPacientes, registrarPaciente } from './services/pacienteService';
+import razasPorEspecie from './data/Razas';
 
 function App() {
-  // carga los pacientes guardados en el navegador, si no hay parte vacio
-  const [pacientes, setPacientes] = useState(() => {
-    const guardados = localStorage.getItem('pacientes');
-    return guardados ? JSON.parse(guardados) : [];
-  });
-
-  // numero que le toca a la proxima mascota, nunca se repite
-  const [siguienteNumero, setSiguienteNumero] = useState(() => {
-    const guardado = localStorage.getItem('siguienteNumero');
-    if (guardado) return Number(guardado);
-
-    // la primera vez parte desde el numero mas alto que ya exista
-    const usados = pacientes.map((paciente) => Number(paciente.numero_atencion.split('-D')[1]));
-    return Math.max(0, ...usados) + 1;
-  });
+  // la lista parte vacia y se llena cuando responde el servicio
+  const [pacientes, setPacientes] = useState([]);
+  // true mientras se esperan los pacientes
+  const [cargando, setCargando] = useState(true);
 
   // guarda cual pestaña se esta viendo
   const [pestanaActiva, setPestanaActiva] = useState('inicio');
@@ -34,43 +25,38 @@ function App() {
   // guarda el paciente del que se esta viendo el carnet
   const [pacienteCarnet, setPacienteCarnet] = useState(null);
 
-  // cada vez que cambia la lista se vuelve a guardar
+  // al abrir la pagina le pide los pacientes al servicio
   useEffect(() => {
+    obtenerPacientes().then((datos) => {
+      setPacientes(datos);
+      setCargando(false);
+    });
+  }, []);
+
+  // cada vez que cambia la lista se vuelve a guardar
+  // espera a que termine la carga para no guardar la lista vacia
+  useEffect(() => {
+    if (cargando) return;
+
     try {
       localStorage.setItem('pacientes', JSON.stringify(pacientes));
     } catch (error) {
       alert('No queda espacio para guardar. Elimina pacientes o usa fotos mas livianas.');
     }
-  }, [pacientes]);
-
-  // guarda el contador para que siga igual al recargar la pagina
-  useEffect(() => {
-    localStorage.setItem('siguienteNumero', siguienteNumero);
-  }, [siguienteNumero]);
+  }, [pacientes, cargando]);
 
   // separa a los que ya fueron dados de alta
   const pacientesDeAlta = pacientes.filter((paciente) => paciente.alta);
 
   const agregarPaciente = (datosPaciente) => {
-    // fecha de hoy
-    const hoy = new Date().toLocaleDateString('es-CL');
-
-    const nuevoPaciente = {
-      ...datosPaciente,
-      id: Date.now(),
-      numero_atencion: `2026-D${siguienteNumero}`,
-      historial: [
-        { fecha: hoy, motivo: 'Ingreso', detalle: 'Registrado en la clínica.' }
-      ]
-    };
-
-    setPacientes([...pacientes, nuevoPaciente]);
-    // el numero avanza para la proxima mascota
-    setSiguienteNumero(siguienteNumero + 1);
-    // oculta el formulario despues de registrar
-    setMostrarFormulario(false);
-    // muestra la lista para ver al paciente nuevo
-    setPestanaActiva('pacientes');
+    // el servicio le pone id, numero de atencion e historial
+    registrarPaciente(datosPaciente).then((nuevoPaciente) => {
+      setPacientes([...pacientes, nuevoPaciente]);
+      // oculta el formulario despues de registrar
+      setMostrarFormulario(false);
+      // muestra la lista para ver al paciente nuevo
+      setPestanaActiva('pacientes');
+    });
   };
 
   // registra un nuevo ingreso de una mascota que ya tiene ficha
@@ -122,7 +108,7 @@ function App() {
   return (
     <div className="contenedor-principal">
       <header className="cabecera">
-        <h1>Sistema de Información - VetPenguin</h1>
+        <h1>Sistema de Información - VetPenguin pruebaaaaa</h1>
         <p>Plataforma de control y seguimiento de pacientes</p>
       </header>
 
@@ -141,7 +127,9 @@ function App() {
         {pestanaActiva === 'pacientes' && (
           <>
             <h2>Lista de Pacientes Registrados</h2>
-            {pacientes.length === 0 ? (
+            {cargando ? (
+              <p className="sin-pacientes">Cargando pacientes...</p>
+            ) : pacientes.length === 0 ? (
               <p className="sin-pacientes">Aún no hay pacientes registrados.</p>
             ) : (
               <TablaPacientes
@@ -158,7 +146,9 @@ function App() {
         {pestanaActiva === 'altas' && (
           <>
             <h2>Pacientes Dados de Alta</h2>
-            {pacientesDeAlta.length === 0 ? (
+            {cargando ? (
+              <p className="sin-pacientes">Cargando pacientes...</p>
+            ) : pacientesDeAlta.length === 0 ? (
               <p className="sin-pacientes">Aún no hay pacientes dados de alta.</p>
             ) : (
               <TablaPacientes
@@ -192,6 +182,7 @@ function App() {
               </button>
               <FormularioPaciente
                 pacientes={pacientes}
+                razasPorEspecie={razasPorEspecie}
                 onAgregar={agregarPaciente}
                 onReingresar={reingresarPaciente}
               />

@@ -1,7 +1,7 @@
 import './TarjetaPaciente.css';
 
 function TarjetaPaciente(props) {
-  const { paciente, onVerFicha } = props;  // aquí extraemos la información del paciente desde las props
+  const { paciente, onVerFicha } = props;  // aqui extraemos la informacion del paciente desde las props
   return (
   <div className="tarjeta">
     {paciente.foto ? (
