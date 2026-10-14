@@ -9,7 +9,16 @@ app.use(cors());
 
 // El formulario envía la fotografía como data URL base64 de hasta 2 MB, que
 // infla ~33%. El límite por defecto de express.json (100 kb) la rechazaría.
-app.use(express.json({ limit: '4mb' }));
+const json = express.json({ limit: '4mb' });
+
+// Un GET no lleva body y por norma HTTP no tiene semántica definida. Si un
+// cliente manda uno (Thunder Client lo hace), se ignora en vez de tumbar la
+// consulta con un 400 que nada tiene que ver con el listado.
+const METODOS_CON_BODY = ['POST', 'PUT', 'PATCH'];
+
+app.use((req, res, next) =>
+  METODOS_CON_BODY.includes(req.method) ? json(req, res, next) : next(),
+);
 
 app.use('/api/pacientes', rutasPacientes);
 
@@ -18,7 +27,7 @@ app.use((req, res) => {
 });
 
 // eslint-disable-next-line no-unused-vars -- Express exige 4 parámetros para reconocer un error handler
-app.use((error, req, res, next) => {
+app.use((error, _req, res, _next) => {
   // Un body malformado o un JSON con un primitivo suelto (null, 123, "x") lo
   // rechaza express.json con status 400 y expose. No es culpa del servidor.
   const status = error.status ?? error.statusCode ?? 500;
