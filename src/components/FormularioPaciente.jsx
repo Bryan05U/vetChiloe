@@ -11,8 +11,17 @@ const formularioInicial = {
   diagnostico: '',
 };
 
-function FormularioPaciente({ onAgregarPaciente }) {
-  const [datos, setDatos] = useState(formularioInicial);
+function FormularioPaciente({ onAgregarPaciente, pacienteInicial, onGuardarCambios, onCancelar }) {
+  const [datos, setDatos] = useState(() => pacienteInicial ? {
+    nombre: pacienteInicial.nombre,
+    especie: pacienteInicial.especie,
+    raza: pacienteInicial.raza,
+    edad: String(pacienteInicial.edad).replace(/\s*años?$/, ''),
+    peso: String(pacienteInicial.peso).replace(/\s*kg$/, ''),
+    duenio: pacienteInicial.duenio,
+    rutDuenio: pacienteInicial.rutDuenio || '',
+    diagnostico: pacienteInicial.diagnostico,
+  } : formularioInicial);
 
   const actualizarCampo = (evento) => {
     const { name, value } = evento.target;
@@ -22,6 +31,10 @@ function FormularioPaciente({ onAgregarPaciente }) {
 
   const manejarEnvio = (evento) => {
     evento.preventDefault();
+    if (pacienteInicial) {
+      onGuardarCambios(datos);
+      return;
+    }
     onAgregarPaciente(datos);
     setDatos(formularioInicial);
   };
@@ -67,14 +80,23 @@ function FormularioPaciente({ onAgregarPaciente }) {
           maxLength="12"
           title="Ingresa el RUT en formato 12.345.678-9, usando solo números, puntos y guion."
           autoComplete="off"
-          required
+          required={!pacienteInicial}
         />
       </label>
       <label className="campo-diagnostico">
         Diagnóstico
         <textarea name="diagnostico" value={datos.diagnostico} onChange={actualizarCampo} required rows="3" />
       </label>
-      <button className="btn-registrar" type="submit">Registrar paciente</button>
+      <div className="acciones-formulario">
+        <button className="btn-registrar" type="submit">
+          {pacienteInicial ? 'Guardar cambios' : 'Registrar paciente'}
+        </button>
+        {onCancelar && (
+          <button className="btn-cancelar" type="button" onClick={onCancelar}>
+            Cancelar
+          </button>
+        )}
+      </div>
     </form>
   );
 }

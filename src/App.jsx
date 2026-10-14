@@ -47,6 +47,7 @@ function App() {
     },
   ]);
   const [pacienteSeleccionado, setPacienteSeleccionado] = useState(null);
+  const [vistaActual, setVistaActual] = useState('fichas');
 
   const agregarPaciente = (datos) => {
     const edad = Number(datos.edad);
@@ -63,38 +64,106 @@ function App() {
       historial: [{ fecha: new Date().toISOString().slice(0, 10), detalle: 'Paciente registrado.' }],
     };
     setPacientes((pacientesActuales) => [...pacientesActuales, nuevoPaciente]);
+    setVistaActual('fichas');
   };
 
-  if (pacienteSeleccionado) {
-    return (
-      <FichaClinica
-        paciente={pacienteSeleccionado}
-        onVolver={() => setPacienteSeleccionado(null)}
-      />
-    );
-  }
+  const actualizarPaciente = (datos) => {
+    if (!pacienteSeleccionado) return;
+
+    const edad = Number(datos.edad);
+    const peso = Number(datos.peso);
+    if (!Number.isFinite(edad) || edad < 0 || !Number.isFinite(peso) || peso < 0) return;
+
+    const pacienteActualizado = {
+      ...pacienteSeleccionado,
+      ...datos,
+      edad: `${edad} años`,
+      peso: `${peso} kg`,
+      emoji: datos.especie === 'Gato' ? '🐱' : datos.especie === 'Perro' ? '🐶' : '🐾',
+    };
+    setPacientes((pacientesActuales) => pacientesActuales.map((paciente) => (
+      paciente.id === pacienteActualizado.id ? pacienteActualizado : paciente
+    )));
+    setPacienteSeleccionado(pacienteActualizado);
+  };
 
   return (
     <div className="contenedor-principal">
       <header className="cabecera">
-        <h1>Sistema de Información - Veterinaria Chiloé</h1>
-        <p>Plataforma de control y seguimiento de pacientes</p>
+        <div className="identidad-clinica">
+          <span className="marca-clinica" aria-hidden="true">V</span>
+          <div>
+            <p className="nombre-clinica">VetChiloé</p>
+            <p className="subtitulo-clinica">Gestión clínica veterinaria</p>
+          </div>
+        </div>
+        <div className="estado-clinica"><span /> Atención de pacientes</div>
       </header>
 
+      <nav className="navegacion-vistas" aria-label="Secciones de pacientes">
+        <button
+          className={vistaActual === 'registro' ? 'boton-vista activa' : 'boton-vista'}
+          type="button"
+          aria-pressed={vistaActual === 'registro'}
+          onClick={() => {
+            setPacienteSeleccionado(null);
+            setVistaActual('registro');
+          }}
+        >
+          Registrar paciente
+        </button>
+        <button
+          className={vistaActual === 'fichas' ? 'boton-vista activa' : 'boton-vista'}
+          type="button"
+          aria-pressed={vistaActual === 'fichas'}
+          onClick={() => {
+            setPacienteSeleccionado(null);
+            setVistaActual('fichas');
+          }}
+        >
+          Fichas clínicas <span className="contador-pacientes">{pacientes.length}</span>
+        </button>
+      </nav>
+
       <main>
-        <h2>Lista de Pacientes Registrados</h2>
-        <FormularioPaciente onAgregarPaciente={agregarPaciente} />
-        <div className="cuadricula-tarjetas">
-          
-          {pacientes.map((pacienteIterado) => (
-            <TarjetaPaciente 
-              key={pacienteIterado.id} 
-              paciente={pacienteIterado} 
-              onVerFicha={setPacienteSeleccionado}
-            />
-          ))}
-          
-        </div>
+        {pacienteSeleccionado ? (
+          <FichaClinica
+            paciente={pacienteSeleccionado}
+            onVolver={() => setPacienteSeleccionado(null)}
+            onGuardarCambios={actualizarPaciente}
+          />
+        ) : vistaActual === 'registro' ? (
+          <section className="seccion-vista">
+            <div className="encabezado-vista">
+              <p className="ceja-vista">NUEVO REGISTRO</p>
+              <h1>Ingreso de paciente</h1>
+              <p>Completa los datos del paciente y su responsable.</p>
+            </div>
+            <FormularioPaciente onAgregarPaciente={agregarPaciente} />
+          </section>
+        ) : (
+          <section className="seccion-vista">
+            <div className="encabezado-vista encabezado-lista">
+              <div>
+                <p className="ceja-vista">DIRECTORIO CLÍNICO</p>
+                <h1>Fichas de pacientes</h1>
+                <p>Pacientes registrados en la clínica.</p>
+              </div>
+              <button className="accion-primaria" type="button" onClick={() => setVistaActual('registro')}>
+                Registrar paciente
+              </button>
+            </div>
+            <div className="cuadricula-tarjetas">
+              {pacientes.map((pacienteIterado) => (
+                <TarjetaPaciente
+                  key={pacienteIterado.id}
+                  paciente={pacienteIterado}
+                  onVerFicha={setPacienteSeleccionado}
+                />
+              ))}
+            </div>
+          </section>
+        )}
       </main>
     </div>
   );

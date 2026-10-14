@@ -1,24 +1,48 @@
 import { useState } from 'react';
+import FormularioPaciente from './FormularioPaciente';
 
 // FichaClinica muestra UNA mascota en una tarjeta giratoria.
 // Props:
 //   paciente -> objeto con los datos de la mascota
 //   onVolver -> función que se ejecuta al presionar "Volver a la lista"
-function FichaClinica({ paciente, onVolver }) {
+function FichaClinica({ paciente, onVolver, onGuardarCambios }) {
   // Estado local: false = se ve el anverso, true = se ve el reverso
   const [volteada, setVolteada] = useState(false);
+  const [editando, setEditando] = useState(false);
 
   const alternarTarjeta = () => setVolteada((estadoActual) => !estadoActual);
 
   return (
     <section className="ficha-clinica">
       <h2>Ficha Clínica: {paciente.nombre}</h2>
-      <button className="btn-volver" onClick={onVolver}>← Volver a la lista</button>
-      <p className="ficha-ayuda">
-        {volteada ? 'Haz clic en la tarjeta para volver a los datos generales' : 'Haz clic en la tarjeta para ver los datos clínicos'}
-      </p>
+      <div className="ficha-acciones">
+        <button className="btn-volver" type="button" onClick={onVolver}>Volver a la lista</button>
+        {!editando && (
+          <button className="btn-editar" type="button" onClick={() => setEditando(true)}>
+            Editar ficha
+          </button>
+        )}
+      </div>
 
-      <div className={`ficha-flip ${volteada ? 'ficha-flip-volteada' : ''}`}>
+      {editando ? (
+        <div className="editor-ficha">
+          <p className="ficha-ayuda">Actualiza los datos del paciente y su responsable.</p>
+          <FormularioPaciente
+            pacienteInicial={paciente}
+            onGuardarCambios={(datos) => {
+              onGuardarCambios(datos);
+              setEditando(false);
+              setVolteada(false);
+            }}
+            onCancelar={() => setEditando(false)}
+          />
+        </div>
+      ) : (
+        <>
+          <p className="ficha-ayuda">
+            {volteada ? 'Haz clic en la tarjeta para volver a los datos generales' : 'Haz clic en la tarjeta para ver los datos clínicos'}
+          </p>
+          <div className={`ficha-flip ${volteada ? 'ficha-flip-volteada' : ''}`}>
         {/* ANVERSO: foto y datos generales */}
         <div className="ficha-cara" onClick={alternarTarjeta} role="button" tabIndex={0}
              onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && alternarTarjeta()}>
@@ -55,7 +79,9 @@ function FichaClinica({ paciente, onVolver }) {
             ))}
           </ul>
         </div>
-      </div>
+          </div>
+        </>
+      )}
     </section>
   );
 }

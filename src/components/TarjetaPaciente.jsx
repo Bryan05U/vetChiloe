@@ -3,15 +3,20 @@
 
 function TarjetaPaciente({ paciente, onVerFicha }) {
   return (
-    <div className="tarjeta">
-      <h3>{paciente.nombre}</h3>
-      <p><strong>Número Paciente:</strong> {paciente.numero_atencion}</p>
-      
-      {/* Botón visual para futura interactividad */}
+    <article className="tarjeta">
+      <div className="tarjeta-identidad">
+        <span className="tarjeta-mascota" aria-hidden="true">{paciente.emoji}</span>
+        <div>
+          <p className="tarjeta-especie">{paciente.especie}</p>
+          <h3>{paciente.nombre}</h3>
+        </div>
+      </div>
+      <p className="tarjeta-responsable"><strong>Responsable</strong>{paciente.duenio}</p>
+      <p className="tarjeta-numero">N° atención <span>{paciente.numero_atencion}</span></p>
       <button className="btn-detalle" type="button" onClick={() => onVerFicha(paciente)}>
-        Ver Ficha Clínica
+        Abrir ficha clínica
       </button>
-    </div>
+    </article>
   );
 }
 export default TarjetaPaciente;
