@@ -1,15 +1,35 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import FlipCard from './FlipCard';
 import './PacienteCard.css';
 
-export function PacienteCard({ paciente, onActualizarPaciente, onSolicitarEliminar }) {
+const RAZAS_POR_ESPECIE = {
+  Canino: ['Quiltro / Mestizo', 'Pastor Alemán', 'Poodle', 'Golden Retriever', 'Beagle', 'Labrador', 'Bulldog', 'Otro'],
+  Felino: ['Común Europeo / Mestizo', 'Siamés', 'Persa', 'Maine Coon', 'Bengala', 'Otro'],
+  Ave: ['Canario', 'Periquito Australiano', 'Ninfa / Calopsita', 'Loro', 'Otro'],
+  Exótico: ['Conejo', 'Cobaya / Cuy', 'Hurón', 'Hamster', 'Otro']
+};
+
+const FOTOS_FALLBACK = {
+  Felino: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=600&auto=format&fit=crop',
+  Canino: 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=600&auto=format&fit=crop',
+  Ave: 'https://images.unsplash.com/photo-1552728089-57bdde30beb3?w=600&auto=format&fit=crop',
+  Exótico: 'https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?w=600&auto=format&fit=crop'
+};
+
+export function PacienteCard({ paciente, onActualizarPaciente, esModal = false }) {
   const [estaVolteada, setEstaVolteada] = useState(false);
   const [editando, setEditando] = useState(false);
 
+  const [nombre, setNombre] = useState(paciente.nombre || '');
+  const [especie, setEspecie] = useState(paciente.especie || 'Felino');
+  const [raza, setRaza] = useState(paciente.raza || 'Común Europeo / Mestizo');
+  const [nombreDueno, setNombreDueno] = useState(paciente.nombreDueno || '');
+  const [rutDueno, setRutDueno] = useState(paciente.rutDueno || '');
   const [edadAnios, setEdadAnios] = useState(paciente.edadAnios ?? 0);
   const [edadMeses, setEdadMeses] = useState(paciente.edadMeses ?? 0);
-  const [peso, setPeso] = useState(paciente.peso || '');
+  const [peso, setPeso] = useState(paciente.peso ? paciente.peso.replace(' kg', '') : '');
   const [motivo, setMotivo] = useState(paciente.motivo || '');
+  const [foto, setFoto] = useState(paciente.foto || FOTOS_FALLBACK[paciente.especie] || FOTOS_FALLBACK.Felino);
 
   const formatearEdad = (a, m) => {
     const anios = parseInt(a, 10) || 0;
@@ -20,131 +40,205 @@ export function PacienteCard({ paciente, onActualizarPaciente, onSolicitarElimin
     return `${anios} ${anios === 1 ? 'año' : 'años'} y ${meses} ${meses === 1 ? 'mes' : 'meses'}`;
   };
 
+  const handleEspecieChange = (nuevaEspecie) => {
+    setEspecie(nuevaEspecie);
+    const razasDisponibles = RAZAS_POR_ESPECIE[nuevaEspecie] || ['Otro'];
+    setRaza(razasDisponibles[0]);
+  };
+
+  const handleFotoChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        alert('Por favor selecciona una foto de menos de 2MB.');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFoto(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const guardarCambios = (e) => {
-    e.stopPropagation();
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    const pesoLimpio = peso.toString().trim();
     onActualizarPaciente({
       ...paciente,
+      nombre: nombre.trim() || paciente.nombre,
+      especie,
+      raza,
+      nombreDueno: nombreDueno.trim(),
+      rutDueno: rutDueno.trim(),
       edad: formatearEdad(edadAnios, edadMeses),
       edadAnios: parseInt(edadAnios, 10) || 0,
       edadMeses: parseInt(edadMeses, 10) || 0,
-      peso: peso.includes('kg') ? peso : `${peso} kg`,
-      motivo
+      peso: pesoLimpio ? (pesoLimpio.includes('kg') ? pesoLimpio : `${pesoLimpio} kg`) : 'No registrado',
+      motivo,
+      foto
     });
     setEditando(false);
   };
 
-  const frontContent = (
-    <div className="card-front-content">
-      <div className="card-image-wrapper">
-        <img src={paciente.foto} alt={paciente.nombre} className="card-avatar" />
-        <div className="card-gradient-overlay" />
-      </div>
-      <div className="card-front-info">
-        <h3 className="paciente-nombre">{paciente.nombre}</h3>
-        <p className="paciente-numero">N° de Atención: <strong>{paciente.numero_atencion}</strong></p>
-        
-        <button 
-          type="button"
-          className="btn-ver-ficha"
-          onPointerDown={(e) => e.stopPropagation()}
-          onClick={(e) => {
-            e.stopPropagation();
-            setEstaVolteada(true);
-          }}
-        >
-          Ver Ficha Clínica
-        </button>
-      </div>
-    </div>
-  );
+  const fotoActual = foto || FOTOS_FALLBACK[especie] || FOTOS_FALLBACK.Felino;
 
-  const backContent = (
-    <div className="card-back-content">
-      <div className="back-header">
-        <span className="badge-ficha">{paciente.especie} • {paciente.raza || 'Mestizo'}</span>
-        <h3>Ficha Clínica</h3>
-      </div>
-
-      <div className="ficha-detalles">
-        <div className="detalle-item">
-          <strong>Paciente:</strong>
-          <span>{paciente.nombre} ({paciente.numero_atencion})</span>
+  const contenidoFicha = (
+    <div className="card-back-content modal-vista-plana">
+      <div className="back-header-pro">
+        <div className="back-header-top">
+          <span className="chip-institucional">AegisVet • Ficha Clínica Oficial</span>
+          <span className="chip-folio">{paciente.numero_atencion}</span>
         </div>
 
-        <div className="detalle-item">
-          <strong>Tutor / RUT:</strong>
-          <span>{paciente.nombreDueno || 'No registrado'} {paciente.rutDueno ? `(${paciente.rutDueno})` : ''}</span>
-        </div>
+        {editando ? (
+          <div className="edicion-cabecera-bloque">
+            <input
+              type="text"
+              className="input-inline input-nombre-edicion"
+              placeholder="Nombre Mascota"
+              value={nombre}
+              onFocus={(e) => e.target.select()}
+              onChange={(e) => setNombre(e.target.value)}
+            />
+            <div className="edicion-selects-row">
+              <select
+                className="select-inline"
+                value={especie}
+                onChange={(e) => handleEspecieChange(e.target.value)}
+              >
+                <option value="Felino">Felino</option>
+                <option value="Canino">Canino</option>
+                <option value="Ave">Ave</option>
+                <option value="Exótico">Exótico</option>
+              </select>
+              <select
+                className="select-inline"
+                value={raza}
+                onChange={(e) => setRaza(e.target.value)}
+              >
+                {(RAZAS_POR_ESPECIE[especie] || ['Otro']).map((r) => (
+                  <option key={r} value={r}>{r}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+        ) : (
+          <>
+            <h3 className="titulo-paciente-carnet">{nombre}</h3>
+            <p className="subtitulo-paciente-carnet">{especie} • {raza}</p>
+          </>
+        )}
+      </div>
 
-        <div className="detalle-item">
-          <strong>Edad:</strong>
+      <div className="ficha-detalles-pro">
+        <div className="detalle-row">
+          <span className="detalle-label">Tutor a Cargo</span>
           {editando ? (
-            <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+            <input
+              type="text"
+              className="input-inline"
+              placeholder="Nombre tutor"
+              value={nombreDueno}
+              onFocus={(e) => e.target.select()}
+              onChange={(e) => setNombreDueno(e.target.value)}
+            />
+          ) : (
+            <span className="detalle-val">{nombreDueno || 'No registrado'}</span>
+          )}
+        </div>
+
+        <div className="detalle-row">
+          <span className="detalle-label">RUT Tutor</span>
+          {editando ? (
+            <input
+              type="text"
+              className="input-inline"
+              placeholder="12.345.678-9"
+              value={rutDueno}
+              onFocus={(e) => e.target.select()}
+              onChange={(e) => setRutDueno(e.target.value)}
+            />
+          ) : (
+            <span className="detalle-val">{rutDueno || 'No informado'}</span>
+          )}
+        </div>
+
+        <div className="detalle-row">
+          <span className="detalle-label">Edad Registrada</span>
+          {editando ? (
+            <div className="input-edades-inline-row">
               <input 
                 type="number" 
                 min="0"
                 max="30"
-                className="input-inline"
-                style={{ width: '45px', textAlign: 'center' }}
+                className="input-inline inline-number"
                 value={edadAnios} 
-                onPointerDown={(e) => e.stopPropagation()}
-                onChange={(e) => setEdadAnios(Math.max(0, e.target.value))}
+                onFocus={(e) => e.target.select()}
+                onChange={(e) => setEdadAnios(Math.max(0, parseInt(e.target.value, 10) || 0))}
               />
-              <span style={{ fontSize: '0.75rem', color: '#bad3ed' }}>a</span>
+              <span className="label-inline">a</span>
               <input 
                 type="number" 
                 min="0"
                 max="11"
-                className="input-inline"
-                style={{ width: '45px', textAlign: 'center' }}
+                className="input-inline inline-number"
                 value={edadMeses} 
-                onPointerDown={(e) => e.stopPropagation()}
-                onChange={(e) => setEdadMeses(Math.min(11, Math.max(0, e.target.value)))}
+                onFocus={(e) => e.target.select()}
+                onChange={(e) => setEdadMeses(Math.min(11, Math.max(0, parseInt(e.target.value, 10) || 0)))}
               />
-              <span style={{ fontSize: '0.75rem', color: '#bad3ed' }}>m</span>
+              <span className="label-inline">m</span>
             </div>
           ) : (
-            <span>{paciente.edad}</span>
+            <span className="detalle-val">{formatearEdad(edadAnios, edadMeses)}</span>
           )}
         </div>
 
-        <div className="detalle-item">
-          <strong>Peso:</strong>
+        <div className="detalle-row">
+          <span className="detalle-label">Peso Corporal</span>
           {editando ? (
-            <input 
-              type="text" 
-              className="input-inline"
-              value={peso} 
-              onPointerDown={(e) => e.stopPropagation()}
-              onChange={(e) => setPeso(e.target.value)}
-            />
+            <div className="peso-input-wrapper">
+              <input 
+                type="number" 
+                step="0.1"
+                min="0"
+                className="input-inline inline-number"
+                placeholder="4.2"
+                value={peso} 
+                onFocus={(e) => e.target.select()}
+                onChange={(e) => setPeso(e.target.value)}
+              />
+              <span className="label-inline">kg</span>
+            </div>
           ) : (
-            <span>{paciente.peso || 'No registrado'}</span>
+            <span className="detalle-val">{peso ? `${peso} kg` : 'No registrado'}</span>
           )}
         </div>
 
-        <div className="detalle-observacion">
-          <strong>Diagnóstico / Motivo:</strong>
+        <div className="detalle-row-observacion">
+          <span className="detalle-label">Motivo de Consulta / Diagnóstico</span>
           {editando ? (
             <textarea
               className="textarea-inline"
               rows="3"
               value={motivo}
-              onPointerDown={(e) => e.stopPropagation()}
+              onFocus={(e) => e.target.select()}
               onChange={(e) => setMotivo(e.target.value)}
             />
           ) : (
-            <p>{paciente.motivo || 'Sin observaciones registradas.'}</p>
+            <p className="texto-motivo">{motivo || 'Control general sin observaciones.'}</p>
           )}
         </div>
       </div>
 
-      <div className="back-actions">
+      <div className="back-actions-pro">
         {editando ? (
           <button 
             type="button" 
-            className="btn-save-inline" 
-            onPointerDown={(e) => e.stopPropagation()}
+            className="btn-guardar-pro" 
             onClick={guardarCambios}
           >
             ✓ Guardar Cambios
@@ -152,37 +246,49 @@ export function PacienteCard({ paciente, onActualizarPaciente, onSolicitarElimin
         ) : (
           <button 
             type="button" 
-            className="btn-edit-inline" 
-            onPointerDown={(e) => e.stopPropagation()}
-            onClick={(e) => { e.stopPropagation(); setEditando(true); }}
+            className="btn-editar-pro" 
+            onClick={() => setEditando(true)}
           >
-            ✎ Actualizar Ficha
+            ✎ Modificar Todos los Datos
           </button>
         )}
+      </div>
+    </div>
+  );
 
-        <button 
-          type="button" 
-          className="btn-eliminar-inline"
-          onPointerDown={(e) => e.stopPropagation()}
-          onClick={(e) => {
-            e.stopPropagation();
-            onSolicitarEliminar(paciente);
-          }}
-        >
-          🗑 Dar de Alta / Eliminar
-        </button>
+  if (esModal) {
+    return (
+      <div className="carnet-modal-pro">
+        <div className="carnet-modal-cover">
+          <img src={fotoActual} alt={nombre} />
+          <div className="carnet-cover-gradient" />
+          {editando && (
+            <label className="btn-cambiar-foto-modal">
+              📷 Cambiar Foto
+              <input type="file" accept="image/*" onChange={handleFotoChange} style={{ display: 'none' }} />
+            </label>
+          )}
+        </div>
+        {contenidoFicha}
+      </div>
+    );
+  }
 
+  const frontContent = (
+    <div className="card-front-content">
+      <div className="card-image-wrapper">
+        <img src={fotoActual} alt={nombre} className="card-avatar" />
+        <div className="card-gradient-overlay" />
+      </div>
+      <div className="card-front-info">
+        <h3 className="paciente-nombre">{nombre}</h3>
+        <p className="paciente-numero">N° de Atención: <strong>{paciente.numero_atencion}</strong></p>
         <button 
           type="button"
-          className="btn-volver"
-          onPointerDown={(e) => e.stopPropagation()}
-          onClick={(e) => {
-            e.stopPropagation();
-            setEditando(false);
-            setEstaVolteada(false);
-          }}
+          className="btn-ver-ficha"
+          onClick={() => setEstaVolteada(true)}
         >
-          ← Volver a la foto
+          Ver Ficha Clínica
         </button>
       </div>
     </div>
@@ -192,7 +298,7 @@ export function PacienteCard({ paciente, onActualizarPaciente, onSolicitarElimin
     <div className="paciente-card-wrapper">
       <FlipCard
         front={frontContent}
-        back={backContent}
+        back={contenidoFicha}
         flipped={estaVolteada}
         flipOnClick={false}
         draggable={false}

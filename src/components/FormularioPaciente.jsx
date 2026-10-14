@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import './FormularioPaciente.css';
 
 const RAZAS_POR_ESPECIE = {
@@ -8,12 +8,19 @@ const RAZAS_POR_ESPECIE = {
   Exótico: ['Conejo', 'Cobaya / Cuy', 'Hurón', 'Hamster', 'Otro']
 };
 
+const FOTOS_DEFAULT = {
+  Felino: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=600&auto=format&fit=crop',
+  Canino: 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=600&auto=format&fit=crop',
+  Ave: 'https://images.unsplash.com/photo-1552728089-57bdde30beb3?w=600&auto=format&fit=crop',
+  Exótico: 'https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?w=600&auto=format&fit=crop'
+};
+
 export function FormularioPaciente({ onAgregarPaciente, onCancelar }) {
   const [nombre, setNombre] = useState('');
   const [especie, setEspecie] = useState('Felino');
   const [raza, setRaza] = useState('Común Europeo / Mestizo');
-  const [edadAnios, setEdadAnios] = useState('0');
-  const [edadMeses, setEdadMeses] = useState('0');
+  const [edadAnios, setEdadAnios] = useState('');
+  const [edadMeses, setEdadMeses] = useState('');
   const [peso, setPeso] = useState('');
   const [nombreDueno, setNombreDueno] = useState('');
   const [rutDueno, setRutDueno] = useState('');
@@ -31,7 +38,7 @@ export function FormularioPaciente({ onAgregarPaciente, onCancelar }) {
     const file = e.target.files[0];
     if (file) {
       if (file.size > 2 * 1024 * 1024) {
-        alert('Por favor selecciona una foto de menos de 2MB para no sobrecargar el almacenamiento.');
+        alert('Por favor selecciona una foto de menos de 2MB.');
         return;
       }
       setNombreArchivo(file.name);
@@ -41,6 +48,20 @@ export function FormularioPaciente({ onAgregarPaciente, onCancelar }) {
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleNumeroChange = (valor, setter, maximo) => {
+    if (valor === '') {
+      setter('');
+      return;
+    }
+    const limpio = valor.replace(/^0+(?=\d)/, '');
+    const num = parseInt(limpio, 10);
+    if (isNaN(num)) {
+      setter('');
+      return;
+    }
+    setter(Math.min(maximo, Math.max(0, num)).toString());
   };
 
   const formatearEdad = (aniosStr, mesesStr) => {
@@ -60,21 +81,21 @@ export function FormularioPaciente({ onAgregarPaciente, onCancelar }) {
       return;
     }
 
-    const fotoFinal = fotoPreview || (
-      especie === 'Felino'
-        ? 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=600&auto=format&fit=crop'
-        : 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=600&auto=format&fit=crop'
-    );
+    // Si no subió foto, asigna automáticamente la foto de archivo según la especie
+    const fotoFinal = fotoPreview || FOTOS_DEFAULT[especie] || FOTOS_DEFAULT.Felino;
+
+    const a = parseInt(edadAnios, 10) || 0;
+    const m = parseInt(edadMeses, 10) || 0;
 
     const nuevoPaciente = {
       id: Date.now(),
       nombre: nombre.trim(),
       especie,
       raza,
-      edad: formatearEdad(edadAnios, edadMeses),
-      edadAnios: parseInt(edadAnios, 10) || 0,
-      edadMeses: parseInt(edadMeses, 10) || 0,
-      peso: peso ? `${peso} kg` : 'No registrado',
+      edad: formatearEdad(a, m),
+      edadAnios: a,
+      edadMeses: m,
+      peso: peso.trim() ? `${peso.trim()} kg` : 'No registrado',
       nombreDueno: nombreDueno.trim(),
       rutDueno: rutDueno.trim() || 'No informado',
       motivo: diagnostico.trim() || 'Control de rutina general.',
@@ -88,9 +109,9 @@ export function FormularioPaciente({ onAgregarPaciente, onCancelar }) {
     <div className="formulario-tab-container">
       <div className="form-card">
         <div className="form-header">
-          <span className="badge-celeste">Nuevo Registro Clínico</span>
-          <h2>Ficha de Ingreso de Mascota</h2>
-          <p>Ingresa los antecedentes del animal y adjunta su fotografía para la tarjeta.</p>
+          <span className="badge-celeste">AegisVet • Nuevo Carnet</span>
+          <h2>Ficha de Ingreso Clínico</h2>
+          <p>Registra la mascota. Si no adjuntas foto, se asignará una oficial por defecto.</p>
         </div>
 
         <form onSubmit={handleSubmit}>
@@ -101,7 +122,7 @@ export function FormularioPaciente({ onAgregarPaciente, onCancelar }) {
               <input
                 id="nombre"
                 type="text"
-                placeholder="Ej: Michi, Simba, Moly"
+                placeholder="Ej: Atenea, Afrodita, Goliath"
                 value={nombre}
                 onChange={(e) => setNombre(e.target.value)}
                 required
@@ -143,8 +164,10 @@ export function FormularioPaciente({ onAgregarPaciente, onCancelar }) {
                     type="number"
                     min="0"
                     max="30"
+                    placeholder="0"
                     value={edadAnios}
-                    onChange={(e) => setEdadAnios(Math.max(0, e.target.value))}
+                    onFocus={(e) => e.target.select()}
+                    onChange={(e) => handleNumeroChange(e.target.value, setEdadAnios, 30)}
                   />
                   <span>años</span>
                 </div>
@@ -153,8 +176,10 @@ export function FormularioPaciente({ onAgregarPaciente, onCancelar }) {
                     type="number"
                     min="0"
                     max="11"
+                    placeholder="0"
                     value={edadMeses}
-                    onChange={(e) => setEdadMeses(Math.min(11, Math.max(0, e.target.value)))}
+                    onFocus={(e) => e.target.select()}
+                    onChange={(e) => handleNumeroChange(e.target.value, setEdadMeses, 11)}
                   />
                   <span>meses</span>
                 </div>
@@ -170,13 +195,13 @@ export function FormularioPaciente({ onAgregarPaciente, onCancelar }) {
                 step="0.1"
                 placeholder="Ej: 4.2"
                 value={peso}
-                onChange={(e) => setPeso(Math.max(0, e.target.value))}
+                onFocus={(e) => e.target.select()}
+                onChange={(e) => setPeso(e.target.value)}
               />
             </div>
 
-            {/* Zona moderna de carga de imagen */}
             <div className="form-group full-width upload-group">
-              <label>Fotografía de la Mascota</label>
+              <label>Fotografía de la Mascota (Opcional)</label>
               <div className="upload-dropzone">
                 <input
                   id="fotoInput"
@@ -189,8 +214,8 @@ export function FormularioPaciente({ onAgregarPaciente, onCancelar }) {
                 {!fotoPreview ? (
                   <label htmlFor="fotoInput" className="btn-custom-upload">
                     <span className="upload-icon">📷</span>
-                    <span className="upload-text-principal">Haz clic para subir una foto</span>
-                    <span className="upload-subtext">Formatos JPG, PNG o WebP (máx. 2MB)</span>
+                    <span className="upload-text-principal">Haz clic para subir una foto personalizada</span>
+                    <span className="upload-subtext">Opcional. Se asignará una foto oficial por defecto si no subes una.</span>
                   </label>
                 ) : (
                   <div className="preview-container">
@@ -199,7 +224,7 @@ export function FormularioPaciente({ onAgregarPaciente, onCancelar }) {
                       <span className="preview-name">{nombreArchivo || 'Foto seleccionada'}</span>
                       <div className="preview-actions">
                         <label htmlFor="fotoInput" className="btn-cambiar-foto">
-                          ✎ Cambiar foto
+                          ✎ Cambiar
                         </label>
                         <button
                           type="button"
@@ -258,10 +283,10 @@ export function FormularioPaciente({ onAgregarPaciente, onCancelar }) {
 
           <div className="form-botones">
             <button type="button" className="btn-cancelar-form" onClick={onCancelar}>
-              Cancelar y Volver
+              Cancelar
             </button>
             <button type="submit" className="btn-guardar-paciente">
-              Ingresar Paciente a Ficha
+              Ingresar al Carnet Clínico
             </button>
           </div>
         </form>
