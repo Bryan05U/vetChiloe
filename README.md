@@ -15,7 +15,7 @@ Este proyecto se enmarca dentro de la asignatura de Tecnologías Web y Móviles 
 ## Arquitectura de tres capas
 
 * **Presentación:** `src/App.jsx` y `src/components/` muestran la interfaz y recogen las acciones del usuario.
-* **Rutas y controladores:** `server/routes/pacientes.routes.js` declara los endpoints Express y `server/controllers/pacientes.controller.js` procesa las peticiones HTTP.
+* **Rutas y controladores:** `server/routes/pacientes.routes.js` declara los endpoints Express. `server/controllers/pacientes.controller.js` recibe las peticiones, extrae `req.body` al crear un paciente, llama al servicio y traduce su resultado a una respuesta HTTP.
 * **Lógica de negocio:** `server/business/pacienteService.js` valida los datos, la especie, el RUT, los duplicados y calcula la edad.
 * **Acceso a datos:** `server/data/pacienteRepository.js` lee y escribe los pacientes en `src/data/pacientes.json`.
 

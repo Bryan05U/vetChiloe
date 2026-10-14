@@ -22,7 +22,8 @@ export const obtenerPaciente = async (req, res) => {
 };
 
 export const crearPaciente = async (req, res) => {
-  const resultado = await registrarPaciente(req.body);
+  const datosPaciente = req.body;
+  const resultado = await registrarPaciente(datosPaciente);
   if (!resultado.ok) {
     res.status(resultado.status).json(resultado);
     return;
