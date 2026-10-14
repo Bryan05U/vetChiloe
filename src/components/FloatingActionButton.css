@@ -1,0 +1,101 @@
+/* src/components/FloatingActionButton.css */
+
+/* ====================================
+   BOTÓN FLOTANTE (+) ROSA
+   ==================================== */
+.fab-button {
+  position: fixed !important;
+  bottom: 28px !important;
+  right: 28px !important;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--pink-primary, #d96b88), var(--pink-dark, #b84c68));
+  color: #ffffff;
+  border: none;
+  font-size: 32px;
+  font-weight: 300;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 15px rgba(184, 76, 104, 0.4);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  z-index: 99999 !important; /* Asegura estar siempre arriba de todo */
+}
+
+.fab-button:hover {
+  transform: scale(1.08);
+  box-shadow: 0 6px 20px rgba(184, 76, 104, 0.55);
+}
+
+.fab-button:active {
+  transform: scale(0.95);
+}
+
+/* ====================================
+   VENTANA MODAL FLOTANTE (POP-UP)
+   ==================================== */
+
+/* Overlay oscuro que cubre la pantalla entera */
+.fab-modal-overlay {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background-color: rgba(45, 34, 38, 0.6) !important; /* Fondo translúcido oscuro */
+  backdrop-filter: blur(4px); /* Suave difuminado */
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  z-index: 100000 !important; /* El nivel más alto de todos */
+  padding: 16px;
+}
+
+/* Tarjeta flotante donde se muestra el formulario */
+.fab-modal-content {
+  background-color: var(--card-bg, #ffffff) !important;
+  border-radius: 16px !important;
+  padding: 32px !important;
+  position: relative !important;
+  width: 100% !important;
+  max-width: 550px !important;
+  max-height: 85vh !important;
+  overflow-y: auto !important;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25) !important;
+  border: 1px solid var(--pink-border, #ebd3dc) !important;
+  animation: fabScaleIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+@keyframes fabScaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Botón '✕' para cerrar la ventana flotante */
+.fab-btn-close {
+  position: absolute !important;
+  top: 14px !important;
+  right: 18px !important;
+  background: transparent !important;
+  border: none !important;
+  font-size: 1.4rem !important;
+  font-weight: bold !important;
+  color: var(--text-muted, #6e5d65) !important;
+  cursor: pointer !important;
+  transition: color 0.2s ease, transform 0.2s ease !important;
+  z-index: 10 !important;
+}
+
+.fab-btn-close:hover {
+  color: var(--pink-dark, #b84c68) !important;
+  transform: scale(1.15) !important;
+}

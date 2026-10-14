@@ -1,3 +1,4 @@
+// src/components/Navbar.jsx
 import React from 'react';
 
 function Navbar({ pestanaActiva, setPestanaActiva }) {
@@ -30,12 +31,6 @@ function Navbar({ pestanaActiva, setPestanaActiva }) {
           onClick={() => setPestanaActiva('historial')}
         >
           Historial Clínico
-        </button>
-        <button 
-          className={`nav-btn ${pestanaActiva === 'registro' ? 'activo' : ''}`}
-          onClick={() => setPestanaActiva('registro')}
-        >
-          + Nuevo Paciente
         </button>
       </div>
     </nav>
