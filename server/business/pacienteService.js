@@ -34,6 +34,24 @@ const calcularEdad = fecha => {
   return `${anios} ${anios === 1 ? 'año' : 'años'}`;
 };
 
+const fechaNacimientoValida = fecha => {
+  if (typeof fecha !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(fecha)) return false;
+
+  const fechaParseada = new Date(`${fecha}T00:00:00.000Z`);
+  return !Number.isNaN(fechaParseada.getTime())
+    && fechaParseada.toISOString().slice(0, 10) === fecha;
+};
+
+const generarNumeroAtencion = pacientes => {
+  const anio = new Date().getFullYear();
+  const siguienteNumero = pacientes.reduce((mayorNumero, paciente) => {
+    const coincidencia = paciente.numero_atencion?.match(/^\d{4}-A(\d+)$/);
+    return coincidencia ? Math.max(mayorNumero, Number(coincidencia[1])) : mayorNumero;
+  }, 0) + 1;
+
+  return `${anio}-A${siguienteNumero}`;
+};
+
 let registroEnCurso = Promise.resolve();
 
 const registrarPacienteEnOrden = async datosFormulario => {
@@ -103,8 +121,7 @@ const registrarPacienteEnOrden = async datosFormulario => {
     };
   }
   if (datosFormulario.modoEdad === 'fecha' && (
-    typeof fechaNacimiento !== 'string'
-    || Number.isNaN(Date.parse(`${fechaNacimiento}T00:00:00`))
+    !fechaNacimientoValida(fechaNacimiento)
     || fechaNacimiento > new Date().toISOString().slice(0, 10)
   )) {
     return {
@@ -142,10 +159,6 @@ const registrarPacienteEnOrden = async datosFormulario => {
   }
 
   const id = pacientes.reduce((mayorId, paciente) => Math.max(mayorId, Number(paciente.id) || 0), 0) + 1;
-  const numeroAtencion = pacientes.reduce((mayorNumero, paciente) => {
-    const coincidencia = paciente.numero_atencion?.match(/^\d{4}-A(\d+)$/);
-    return coincidencia ? Math.max(mayorNumero, Number(coincidencia[1])) : mayorNumero;
-  }, 0) + 1;
   const { modoEdad, ...datosPaciente } = datosFormulario;
   const rut = `${rutIngresado.slice(0, -1)}-${rutIngresado.slice(-1)}`;
   const paciente = {
@@ -159,7 +172,7 @@ const registrarPacienteEnOrden = async datosFormulario => {
     fecha_nacimiento: modoEdad === 'fecha' ? datosFormulario.fecha_nacimiento : '',
     rut,
     id,
-    numero_atencion: `${new Date().getFullYear()}-A${numeroAtencion}`
+    numero_atencion: generarNumeroAtencion(pacientes)
   };
 
   await guardarPaciente(paciente);
