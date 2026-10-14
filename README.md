@@ -23,27 +23,7 @@ La interfaz se comunica con la API mediante `src/data/pacienteApi.js`. Ejecuta `
 
 ### Diagrama de capas
 
-```mermaid
-flowchart LR
-    usuario[Usuario]
-    presentacion["Presentación<br/>React + Vite<br/>src/App.jsx y componentes"]
-    rutas["Rutas<br/>Express<br/>server/routes"]
-    controladores["Controladores<br/>Express<br/>server/controllers"]
-    servicios["Servicios / lógica de negocio<br/>server/business"]
-    repositorios["Repositorios / acceso a datos<br/>server/data"]
-    json[("Base de datos JSON<br/>src/data/pacientes.json")]
-
-    usuario -->|"Usa la interfaz"| presentacion
-    presentacion -->|"HTTP: GET / POST"| rutas
-    rutas -->|"Enruta la petición"| controladores
-    controladores -->|"req.body / consulta"| servicios
-    servicios -->|"Valida y aplica reglas"| repositorios
-    repositorios -->|"Lee y escribe"| json
-    json -.->|"Paciente guardado"| repositorios
-    repositorios -.->|"Paciente creado"| servicios
-    servicios -.->|"Resultado"| controladores
-    controladores -.->|"Respuesta HTTP"| presentacion
-```
+![Diagrama de capas de VetChiloé](assets/img/diagrama-capas-vetchiloe.svg)
 
 ### Probar la API con Thunder Client
 

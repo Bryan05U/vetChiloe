@@ -1,0 +1,107 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="650" viewBox="0 0 1440 650" role="img" aria-labelledby="title description">
+  <title id="title">Diagrama de capas de VetChiloé</title>
+  <desc id="description">Flujo desde la presentación React hasta la base de datos JSON a través de rutas, controladores, servicios y repositorios; la respuesta del paciente vuelve hacia la presentación.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f4faf6"/>
+      <stop offset="1" stop-color="#e8f2ec"/>
+    </linearGradient>
+    <filter id="shadow" x="-15%" y="-15%" width="130%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#174c38" flood-opacity=".11"/>
+    </filter>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+      <path d="M0 0 10 5 0 10z" fill="#21845b"/>
+    </marker>
+    <marker id="arrow-light" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+      <path d="M0 0 10 5 0 10z" fill="#6a9a80"/>
+    </marker>
+    <style>
+      text { font-family: Inter, "Segoe UI", Arial, sans-serif; }
+      .title { fill: #163b2d; font-size: 34px; font-weight: 750; }
+      .subtitle { fill: #587264; font-size: 17px; }
+      .card-title { fill: #183d2e; font-size: 17px; font-weight: 700; }
+      .card-copy { fill: #536b5e; font-size: 13px; }
+      .card-path { fill: #397451; font-size: 11px; font-weight: 600; }
+      .badge-text { fill: #fff; font-size: 14px; font-weight: 700; }
+      .arrow-label { fill: #397451; font-size: 12px; font-weight: 650; }
+    </style>
+  </defs>
+
+  <rect width="1440" height="650" rx="28" fill="url(#background)"/>
+  <circle cx="1360" cy="75" r="125" fill="#dcece2" opacity=".55"/>
+  <circle cx="70" cy="600" r="145" fill="#dcece2" opacity=".45"/>
+
+  <text class="title" x="72" y="82">Arquitectura por capas · VetChiloé</text>
+  <text class="subtitle" x="74" y="116">Cada capa delega su responsabilidad a la siguiente; los datos se persisten actualmente en JSON.</text>
+
+  <g filter="url(#shadow)">
+    <rect x="60" y="195" width="195" height="210" rx="18" fill="#fff" stroke="#55a477" stroke-width="3"/>
+    <rect x="285" y="195" width="195" height="210" rx="18" fill="#fff" stroke="#55a477" stroke-width="3"/>
+    <rect x="510" y="195" width="195" height="210" rx="18" fill="#fff" stroke="#55a477" stroke-width="3"/>
+    <rect x="735" y="195" width="195" height="210" rx="18" fill="#fff" stroke="#55a477" stroke-width="3"/>
+    <rect x="960" y="195" width="195" height="210" rx="18" fill="#fff" stroke="#55a477" stroke-width="3"/>
+    <rect x="1185" y="195" width="195" height="210" rx="18" fill="#e4f1e8" stroke="#37865c" stroke-width="3"/>
+  </g>
+
+  <g>
+    <circle cx="91" cy="226" r="17" fill="#21845b"/><text class="badge-text" x="91" y="231" text-anchor="middle">1</text>
+    <text class="card-title" x="82" y="274">Presentación</text>
+    <text class="card-copy" x="82" y="305">React + Vite</text>
+    <text class="card-copy" x="82" y="329">Muestra pacientes</text>
+    <text class="card-copy" x="82" y="351">y captura acciones</text>
+    <text class="card-path" x="82" y="382">src/App.jsx</text>
+
+    <circle cx="316" cy="226" r="17" fill="#21845b"/><text class="badge-text" x="316" y="231" text-anchor="middle">2</text>
+    <text class="card-title" x="307" y="274">Rutas</text>
+    <text class="card-copy" x="307" y="305">Express</text>
+    <text class="card-copy" x="307" y="329">Define GET y POST</text>
+    <text class="card-copy" x="307" y="351">y dirige peticiones</text>
+    <text class="card-path" x="307" y="382">server/routes</text>
+
+    <circle cx="541" cy="226" r="17" fill="#21845b"/><text class="badge-text" x="541" y="231" text-anchor="middle">3</text>
+    <text class="card-title" x="532" y="274">Controladores</text>
+    <text class="card-copy" x="532" y="305">Express</text>
+    <text class="card-copy" x="532" y="329">Leen req, llaman</text>
+    <text class="card-copy" x="532" y="351">al servicio y responden</text>
+    <text class="card-path" x="532" y="382">server/controllers</text>
+
+    <circle cx="766" cy="226" r="17" fill="#21845b"/><text class="badge-text" x="766" y="231" text-anchor="middle">4</text>
+    <text class="card-title" x="757" y="274">Servicios</text>
+    <text class="card-copy" x="757" y="305">Reglas de negocio</text>
+    <text class="card-copy" x="757" y="329">Validan y calculan</text>
+    <text class="card-copy" x="757" y="351">N° de atención</text>
+    <text class="card-path" x="757" y="382">server/business</text>
+
+    <circle cx="991" cy="226" r="17" fill="#21845b"/><text class="badge-text" x="991" y="231" text-anchor="middle">5</text>
+    <text class="card-title" x="982" y="274">Repositorio</text>
+    <text class="card-copy" x="982" y="305">Único acceso a datos</text>
+    <text class="card-copy" x="982" y="329">Lee y escribe</text>
+    <text class="card-copy" x="982" y="351">sin reglas de negocio</text>
+    <text class="card-path" x="982" y="382">server/data</text>
+
+    <circle cx="1216" cy="226" r="17" fill="#21845b"/><text class="badge-text" x="1216" y="231" text-anchor="middle">6</text>
+    <text class="card-title" x="1207" y="274">Base de datos</text>
+    <text class="card-copy" x="1207" y="305">JSON (actual)</text>
+    <text class="card-copy" x="1207" y="329">Guarda pacientes</text>
+    <text class="card-copy" x="1207" y="351">y conserva sus datos</text>
+    <text class="card-path" x="1207" y="382">src/data/pacientes.json</text>
+  </g>
+
+  <g fill="none" stroke="#21845b" stroke-width="3" marker-end="url(#arrow)">
+    <path d="M260 260h18"/>
+    <path d="M485 260h18"/>
+    <path d="M710 260h18"/>
+    <path d="M935 260h18"/>
+    <path d="M1160 260h18"/>
+  </g>
+  <text class="arrow-label" x="270" y="239" text-anchor="middle">HTTP</text>
+  <text class="arrow-label" x="495" y="239" text-anchor="middle">ruta</text>
+  <text class="arrow-label" x="720" y="239" text-anchor="middle">datos</text>
+  <text class="arrow-label" x="945" y="239" text-anchor="middle">reglas</text>
+  <text class="arrow-label" x="1170" y="239" text-anchor="middle">JSON</text>
+
+  <path d="M1282 451v53H158" fill="none" stroke="#6a9a80" stroke-width="3" stroke-dasharray="9 8" marker-end="url(#arrow-light)"/>
+  <rect x="503" y="483" width="315" height="42" rx="21" fill="#f4faf6" stroke="#b8d6c2" stroke-width="2"/>
+  <text class="arrow-label" x="660" y="510" text-anchor="middle">Paciente creado · respuesta HTTP al cliente</text>
+  <text class="subtitle" x="720" y="582" text-anchor="middle">Flujo de solicitud: izquierda → derecha · Retorno de respuesta: derecha → izquierda</text>
+</svg>
