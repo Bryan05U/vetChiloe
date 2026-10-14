@@ -1,4 +1,5 @@
-const API_URL = 'http://localhost:3000/api/pacientes';
+// src/services/pacienteService.js
+const API_URL = 'http://localhost:3001/api/pacientes'; // <--- Cambiado a 3001
 
 export const obtenerPacientes = async () => {
   const res = await fetch(API_URL);
