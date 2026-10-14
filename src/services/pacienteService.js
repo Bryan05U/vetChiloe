@@ -1,22 +1,28 @@
-﻿import { PACIENTES_INICIALES } from '../data/pacientesMock';
-
-let memoriaPacientes = [...PACIENTES_INICIALES];
+﻿const API_URL = 'http://localhost:3000/api/pacientes';
 
 export const pacienteService = {
   obtenerPacientes: async () => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve([...memoriaPacientes]);
-      }, 100);
-    });
+    const res = await fetch(API_URL);
+    if (!res.ok) {
+      throw new Error('Error al obtener la lista de pacientes');
+    }
+    return await res.json();
   },
 
-  registrarPaciente: async (nuevoPaciente) => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        memoriaPacientes = [nuevoPaciente, ...memoriaPacientes];
-        resolve(nuevoPaciente);
-      }, 100);
+  registrarPaciente: async (paciente) => {
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(paciente)
     });
+
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      throw new Error(errorData.error || 'Error al registrar el paciente en el servidor');
+    }
+
+    return await res.json();
   }
 };
