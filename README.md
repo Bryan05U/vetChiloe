@@ -17,7 +17,7 @@ Este proyecto se enmarca dentro de la asignatura de Tecnologías Web y Móviles 
 * **Presentación:** `src/App.jsx` y `src/components/` muestran la interfaz y recogen las acciones del usuario.
 * **Rutas y controladores:** `server/routes/pacientes.routes.js` declara los endpoints Express. `server/controllers/pacientes.controller.js` recibe las peticiones, extrae `req.body` al crear un paciente, llama al servicio y traduce su resultado a una respuesta HTTP.
 * **Lógica de negocio:** `server/business/pacienteService.js` valida los datos, la especie, la edad y el RUT; detecta duplicados, calcula la edad y genera el número de atención.
-* **Acceso a datos:** `server/data/pacienteRepository.js` lee y escribe los pacientes en `src/data/pacientes.json`.
+* **Acceso a datos:** `server/data/pacienteRepository.js` es el único módulo que accede a la base de datos actual (`src/data/pacientes.json`). `insertarPaciente` agrega el registro al arreglo y persiste el archivo mediante escritura temporal y reemplazo; cumple el rol de un `INSERT INTO pacientes` mientras la BD sea JSON.
 
 La interfaz se comunica con la API mediante `src/data/pacienteApi.js`. Ejecuta `npm run dev` para iniciar la aplicación y la API local. Los pacientes registrados se guardan en el archivo JSON y permanecen al reiniciar el servidor. Las imágenes subidas se almacenan como data URL dentro de ese JSON. El repositorio podrá reemplazarse en el futuro por PostgreSQL sin acoplar la interfaz a la base de datos.
 

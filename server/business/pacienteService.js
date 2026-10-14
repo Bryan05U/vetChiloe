@@ -1,4 +1,4 @@
-import { guardarPaciente, obtenerPacientePorId as buscarPacientePorId, obtenerPacientes } from '../data/pacienteRepository.js'
+import { insertarPaciente, obtenerPacientePorId as buscarPacientePorId, obtenerPacientes } from '../data/pacienteRepository.js'
 
 const normalizarRut = rut => rut.replace(/[.\s-]/g, '').toUpperCase();
 
@@ -175,7 +175,7 @@ const registrarPacienteEnOrden = async datosFormulario => {
     numero_atencion: generarNumeroAtencion(pacientes)
   };
 
-  await guardarPaciente(paciente);
+  await insertarPaciente(paciente);
   return { ok: true, paciente };
 };
 

@@ -16,7 +16,7 @@ export const obtenerPacientePorId = async id => {
   return pacientes.find(paciente => paciente.id === id) || null;
 };
 
-export const guardarPaciente = async paciente => {
+export const insertarPaciente = async paciente => {
   const pacientes = await obtenerPacientes();
   const pacientesActualizados = [...pacientes, paciente];
   const archivoTemporal = `${pacientesFile}.${process.pid}.tmp`;
