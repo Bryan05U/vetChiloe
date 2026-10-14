@@ -6,12 +6,16 @@ import { guardarPaciente, obtenerPacientes } from './data/pacienteApi.js'
 import charkicitoImage from './assets/images/charkicito.jpg'
 import mercedesImage from './assets/images/mercedes.jpg'
 import hannitaImage from './assets/images/hannita.jpg'
+import imagenSinFoto from './assets/images/sin-foto.svg'
 
 const imagenesPacientes = {
   'charkicito.jpg': charkicitoImage,
   'mercedes.jpg': mercedesImage,
-  'hannita.jpg': hannitaImage
+  'hannita.jpg': hannitaImage,
+  'sin-foto.svg': imagenSinFoto
 };
+
+const resolverFotoPaciente = foto => imagenesPacientes[foto] || foto || imagenSinFoto;
 
 const formatearFecha = fecha => fecha.split('-').reverse().join('/');
 const formatearEdad = edad => typeof edad === 'number'
@@ -59,7 +63,7 @@ function App() {
         if (!cancelado) {
           setPacientes(pacientesGuardados.map(paciente => ({
             ...paciente,
-            foto: imagenesPacientes[paciente.foto] || paciente.foto
+            foto: resolverFotoPaciente(paciente.foto)
           })));
           setErrorPacientes('');
         }
@@ -150,7 +154,7 @@ function App() {
 
       const paciente = {
         ...resultado.paciente,
-        foto: imagenesPacientes[resultado.paciente.foto] || resultado.paciente.foto
+        foto: resolverFotoPaciente(resultado.paciente.foto)
       };
       setPacientes(actuales => [...actuales, paciente]);
       setMostrarFormulario(false);
@@ -222,6 +226,7 @@ function App() {
               <table className="tabla-pacientes">
                 <thead>
                   <tr>
+                    <th scope="col">ID</th>
                     <th scope="col">Paciente</th>
                     <th scope="col">Especie</th>
                     <th scope="col">Raza</th>
@@ -246,6 +251,7 @@ function App() {
                         }
                       }}
                     >
+                      <td>{paciente.id}</td>
                       <th scope="row">{paciente.nombre}</th>
                       <td>{paciente.especie}</td>
                       <td>{paciente.raza}</td>
@@ -311,6 +317,7 @@ function App() {
                 back={
                   <div className="reverso-ficha-paciente">
                     <h3>{pacienteSeleccionado.nombre}</h3>
+                    <p>ID: {pacienteSeleccionado.id}</p>
                     <p>Especie: {pacienteSeleccionado.especie}</p>
                     <p>Raza: {pacienteSeleccionado.raza}</p>
                     <p>Diagnóstico: {pacienteSeleccionado.diagnostico || 'No registrado'}</p>

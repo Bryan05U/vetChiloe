@@ -45,7 +45,7 @@ const registrarPacienteEnOrden = async datosFormulario => {
     };
   }
 
-  const camposObligatorios = ['nombre', 'especie', 'raza', 'dueño', 'rut', 'telefono', 'foto'];
+  const camposObligatorios = ['nombre', 'especie', 'raza', 'dueño', 'rut', 'telefono'];
   const campoVacio = camposObligatorios.find(campo => (
     typeof datosFormulario[campo] !== 'string' || !datosFormulario[campo].trim()
   ));
@@ -150,6 +150,7 @@ const registrarPacienteEnOrden = async datosFormulario => {
   const rut = `${rutIngresado.slice(0, -1)}-${rutIngresado.slice(-1)}`;
   const paciente = {
     ...datosPaciente,
+    foto: datosPaciente.foto || 'sin-foto.svg',
     edad: modoEdad === 'fecha'
       ? calcularEdad(datosFormulario.fecha_nacimiento)
       : edadManual,

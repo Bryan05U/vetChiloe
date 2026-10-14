@@ -27,7 +27,7 @@ Con `npm run dev` ejecutándose, envía solicitudes a `http://localhost:3001`:
 
 * `GET /api/pacientes`: listar pacientes.
 * `GET /api/pacientes/1`: obtener por ID; devuelve `404` si no existe y `400` si el ID no es válido.
-* `POST /api/pacientes`: crear un paciente. Selecciona **Body → JSON** y envía los campos `nombre`, `especie`, `raza`, `diagnostico`, `edad`, `peso`, `modoEdad`, `fecha_nacimiento`, `dueño`, `rut`, `telefono` y `foto`. Para una edad manual usa `"modoEdad": "manual"` y un valor numérico en `edad`; para fecha de nacimiento usa `"modoEdad": "fecha"` y una fecha `YYYY-MM-DD`. La imagen debe enviarse como data URL. La API responde `201` al crear, `422` ante datos inválidos y `409` si el RUT ya existe.
+* `POST /api/pacientes`: crear un paciente. Selecciona **Body → JSON** y envía los campos `nombre`, `especie`, `raza`, `diagnostico`, `edad`, `peso`, `modoEdad`, `fecha_nacimiento`, `dueño`, `rut` y `telefono`. Para una edad manual usa `"modoEdad": "manual"` y un valor numérico en `edad`; para fecha de nacimiento usa `"modoEdad": "fecha"` y una fecha `YYYY-MM-DD`. `foto` es opcional: si se omite o se envía vacía, se asigna la imagen predeterminada. Para adjuntar una foto, envíala como data URL. La API responde `201` al crear, `422` ante datos inválidos y `409` si el RUT ya existe.
 
 Para previsualizar una compilación de producción, ejecuta primero `npm run build` y luego `npm run preview`.
 

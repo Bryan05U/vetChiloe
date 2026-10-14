@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 600" role="img" aria-labelledby="title description">
+  <title id="title">Sin foto</title>
+  <desc id="description">Imagen predeterminada de una huella sobre un fondo gris claro.</desc>
+  <rect width="480" height="600" fill="#e7ece8"/>
+  <circle cx="240" cy="270" r="136" fill="#d3ddd5"/>
+  <g fill="#829489">
+    <ellipse cx="240" cy="307" rx="62" ry="76"/>
+    <ellipse cx="156" cy="236" rx="32" ry="43" transform="rotate(-25 156 236)"/>
+    <ellipse cx="211" cy="190" rx="32" ry="43" transform="rotate(-8 211 190)"/>
+    <ellipse cx="270" cy="190" rx="32" ry="43" transform="rotate(8 270 190)"/>
+    <ellipse cx="324" cy="236" rx="32" ry="43" transform="rotate(25 324 236)"/>
+  </g>
+  <text x="240" y="474" fill="#53645a" font-family="system-ui, sans-serif" font-size="28" font-weight="600" text-anchor="middle">Sin foto</text>
+</svg>

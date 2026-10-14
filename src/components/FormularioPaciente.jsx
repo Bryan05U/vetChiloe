@@ -138,10 +138,10 @@ export default function FormularioPaciente({ onGuardar, onCerrar, botonCerrarRef
           <label>
             Imagen del paciente
             <span className="selector-archivo">
-              <input className="selector-archivo-input" type="file" accept="image/*" aria-label="Seleccionar imagen del paciente" onChange={manejarImagen} onInput={limpiarError} onInvalid={mostrarErrorObligatorio} required />
+              <input className="selector-archivo-input" type="file" accept="image/*" aria-label="Seleccionar imagen del paciente" onChange={manejarImagen} />
               <span className="selector-archivo-boton" aria-hidden="true">Seleccionar imagen</span>
               <span className="selector-archivo-nombre" aria-live="polite">
-                {nombreArchivoImagen || 'Ningún archivo seleccionado'}
+                {nombreArchivoImagen || 'Opcional · se usará una imagen predeterminada'}
               </span>
             </span>
           </label>
