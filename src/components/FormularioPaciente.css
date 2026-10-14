@@ -4,11 +4,11 @@
   padding: 2rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   margin-bottom: 3rem;
-  border-top: 4px solid #4CAF50;
+  border-top: 4px solid #4e4caf;
 }
 
 .contenedor-formulario h2 {
-  color: #2e7d32;
+  color: #2e367d;
   margin-bottom: 1.5rem;
   text-align: center;
 }
@@ -46,12 +46,12 @@
 .grupo-input select:focus,
 .grupo-input textarea:focus {
   outline: none;
-  border-color: #4CAF50;
+  border-color: #4e4caf;
   box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
 }
 
 .btn-guardar {
-  background-color: #1976d2;
+  background-color: #19d2b3;
   color: white;
   border: none;
   padding: 14px;

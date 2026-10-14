@@ -39,7 +39,7 @@
 
 .celda-destacada {
   font-weight: bold;
-  color: #2e7d32;
+  color: #2e367d;
 }
 
 .celda-diagnostico {
@@ -60,22 +60,22 @@
 
 .badge-especie.canino {
   background-color: #e3f2fd;
-  color: #1565c0;
+  color: #15c057;
 }
 
 .badge-especie.felino {
   background-color: #fff3e0;
-  color: #e65100;
+  color: #6fe600;
 }
 
 .badge-especie.exótico {
   background-color: #f3e5f5;
-  color: #7b1fa2;
+  color: #1fa27b;
 }
 
 /* Botón de acción */
 .btn-carnet {
-  background-color: #4CAF50;
+  background-color: #4e4caf;
   color: white;
   border: none;
   padding: 8px 16px;
@@ -87,7 +87,7 @@
 }
 
 .btn-carnet:hover {
-  background-color: #388e3c;
+  background-color: #41388e;
   transform: scale(1.05);
 }
 
