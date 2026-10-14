@@ -12,6 +12,7 @@ export default function FormularioPaciente({ onGuardar, onCerrar, botonCerrarRef
   const [pasoFormulario, setPasoFormulario] = useState(1);
   const [modoEdad, setModoEdad] = useState('manual');
   const [nombreArchivoImagen, setNombreArchivoImagen] = useState('');
+  const [guardando, setGuardando] = useState(false);
   const [formulario, setFormulario] = useState({
     nombre: '',
     especie: '',
@@ -49,7 +50,14 @@ export default function FormularioPaciente({ onGuardar, onCerrar, botonCerrarRef
 
   const manejarEnvio = async evento => {
     evento.preventDefault();
-    await onGuardar({ ...formulario, modoEdad }, evento.currentTarget);
+    if (guardando) return;
+
+    setGuardando(true);
+    try {
+      await onGuardar({ ...formulario, modoEdad }, evento.currentTarget);
+    } finally {
+      setGuardando(false);
+    }
   };
 
   return (
@@ -158,7 +166,9 @@ export default function FormularioPaciente({ onGuardar, onCerrar, botonCerrarRef
         </div>
         <div className="acciones-formulario">
           <button className="boton-volver" type="button" onClick={() => setPasoFormulario(1)}>Atrás</button>
-          <button className="boton-guardar" type="submit">Guardar paciente</button>
+          <button className="boton-guardar" type="submit" disabled={guardando}>
+            {guardando ? 'Guardando...' : 'Guardar paciente'}
+          </button>
         </div>
       </fieldset>
     </form>
