@@ -2,7 +2,7 @@
 let pacientes = [
   {
     id: 1,
-    nombre: 'Michi',
+    nombre: 'Poi',
     numero_atencion: '2026-D1',
     especie: 'Gato',
     raza: 'Siamés',
@@ -19,7 +19,7 @@ let pacientes = [
   },
   {
     id: 2,
-    nombre: 'Toby',
+    nombre: 'Kou',
     numero_atencion: '2026-D2',
     especie: 'Perro',
     raza: 'Labrador',
