@@ -17,27 +17,20 @@ El sistema está separado en N-Capas. Cada capa tiene una sola responsabilidad y
 
 ```mermaid
 flowchart TD
-    subgraph FRONTEND["Frontend - React"]
-        COMP["Componentes<br/>TablaPacientes, FormularioPaciente, FichaClinica"]
-        APP["App.jsx<br/>estado y useEffect"]
-        SERV["services/pacienteService.js<br/>obtenerPacientes, registrarPaciente"]
-        APP -- props --> COMP
-        COMP -- eventos --> APP
-        APP --> SERV
+    subgraph Frontend
+        A[Componentes] -->|eventos| B[App.jsx]
+        B -->|props| A
+        B --> C[pacienteService.js]
     end
 
-    subgraph BACKEND["Backend - Node.js + Express"]
-        ROUTES["routes/pacientes.routes.js<br/>define las URL"]
-        CTRL["controllers/pacientes.controller.js<br/>lee req y responde con res"]
-        SRV["services/pacientes.service.js<br/>reglas de negocio"]
-        REPO["repositories/pacientes.repository.js<br/>acceso a los datos"]
-        ROUTES --> CTRL --> SRV --> REPO
+    subgraph Backend
+        D[routes] --> E[controllers]
+        E --> F[services]
+        F --> G[repositories]
     end
 
-    DATOS[("Datos en memoria<br/>luego PostgreSQL")]
-
-    SERV -- "fetch HTTP<br/>/api/pacientes" --> ROUTES
-    REPO --> DATOS
+    C -->|fetch HTTP| D
+    G --> H[(Datos en memoria)]
 ```
 
 | Capa | Archivo | Responsabilidad |
