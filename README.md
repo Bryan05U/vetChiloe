@@ -26,7 +26,7 @@ flowchart TD
     subgraph BE["Backend · Express (3000)"]
         RUT["Rutas<br/>server/routes/pacientes.js<br/><i>GET · POST /api/pacientes</i>"]
         CTL["Controladores<br/>server/controllers/pacientes.js<br/><i>traduce HTTP ↔ dominio, 200 / 201 / 400</i>"]
-        SRV["Servicios<br/>server/services/pacientes.js<br/><i>regla de negocio: especie Felino o Canino,<br/>genera el N° de atención</i>"]
+        SRV["Servicios<br/>server/services/pacientes.js<br/><i>regla de negocio: valida la especie,<br/>genera el N° de atención</i>"]
         REP["Repositorios<br/>server/repositories/pacientes.js<br/><i>único lugar que conoce el almacenamiento</i>"]
         RUT --> CTL --> SRV --> REP
     end
@@ -50,7 +50,7 @@ flowchart TD
 | Servicios (front) | `src/services/pacienteService.js` | Único punto de contacto con la API. Es lo único que cambió al conectar el backend. |
 | Rutas | `server/routes/pacientes.js` | Mapea método + URL a un controlador. No tiene lógica. |
 | Controladores | `server/controllers/pacientes.js` | Traduce HTTP a dominio: lee `req.body`, responde 200/201 y convierte un error de validación en 400. |
-| Servicios (back) | `server/services/pacientes.js` | Regla de negocio: valida que la especie sea Felino o Canino y genera el N° de atención. |
+| Servicios (back) | `server/services/pacientes.js` | Regla de negocio: valida que la especie exista en el catálogo compartido con el formulario y genera el N° de atención. |
 | Repositorios | `server/repositories/pacientes.js` | Único lugar que sabe dónde viven los datos. Hoy un arreglo en memoria; mañana PostgreSQL. |
 
 ## ⚙️ Requisitos Previos
@@ -104,7 +104,7 @@ Base: `http://localhost:3000/api/pacientes`
 | --- | --- | --- |
 | GET | `/api/pacientes` | `200` — arreglo con todos los pacientes |
 | POST | `/api/pacientes` | `201` — el paciente creado, con `id` y `numero_atencion` emitidos por el servidor |
-| POST | `/api/pacientes` con especie fuera de Felino/Canino | `400` — `{ "error": "..." }` |
+| POST | `/api/pacientes` con una especie fuera del catálogo | `400` — `{ "error": "..." }` |
 
 Ejemplo de alta:
 
@@ -115,3 +115,23 @@ curl -X POST http://localhost:3000/api/pacientes \
 ```
 
 El `numero_atencion` que envíe el cliente se ignora: lo emite el servidor con el formato `AAAA-NNN` (por ejemplo `2026-004`).
+
+### Especies válidas
+
+El catálogo lo comparten el formulario y la API:
+
+| Archivo | Constante | Rol |
+| --- | --- | --- |
+| `src/utils/validaciones.js` | `ESPECIES` | Las opciones que ofrece el formulario |
+| `server/services/pacientes.js` | `ESPECIES_VALIDAS` | Las que acepta la API |
+
+Las dos listas deben coincidir. Hoy son `Canino`, `Felino`, `Ave`, `Roedor`, `Reptil` y `Otro`.
+
+Como el formulario solo ofrece especies del catálogo, **el `400` por especie inválida no se puede provocar desde la interfaz**: se prueba directo contra la API, con una especie fuera de la lista o sin el campo.
+
+```bash
+curl -X POST http://localhost:3000/api/pacientes \
+  -H 'Content-Type: application/json' \
+  -d '{"nombre":"Test","especie":"Serpiente"}'
+# 400 {"error":"La especie debe ser una de: Canino, Felino, Ave, Roedor, Reptil, Otro. Se recibió: Serpiente."}
+```
