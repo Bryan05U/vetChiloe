@@ -27,22 +27,23 @@ function App() {
 
   // al abrir la pagina le pide los pacientes al servicio
   useEffect(() => {
-    obtenerPacientes().then((datos) => {
-      setPacientes(datos);
-      setCargando(false);
-    });
+    obtenerPacientes()
+      .then((datos) => {
+        setPacientes(datos);
+        setCargando(false);
+      })
+      // si el servidor esta apagado avisa en vez de quedarse cargando
+      .catch(() => {
+        alert('No se pudo conectar con el servidor.');
+        setCargando(false);
+      });
   }, []);
 
   // cada vez que cambia la lista se vuelve a guardar
   // espera a que termine la carga para no guardar la lista vacia
   useEffect(() => {
     if (cargando) return;
-
-    try {
-      guardarPacientes(pacientes);
-    } catch (error) {
-      alert('No queda espacio para guardar. Elimina pacientes o usa fotos mas livianas.');
-    }
+    guardarPacientes(pacientes);
   }, [pacientes, cargando]);
 
   // separa a los que ya fueron dados de alta
@@ -50,13 +51,16 @@ function App() {
 
   const agregarPaciente = (datosPaciente) => {
     // el servicio le pone id, numero de atencion e historial
-    registrarPaciente(datosPaciente).then((nuevoPaciente) => {
-      setPacientes([...pacientes, nuevoPaciente]);
-      // oculta el formulario despues de registrar
-      setMostrarFormulario(false);
-      // muestra la lista para ver al paciente nuevo
-      setPestanaActiva('pacientes');
-    });
+    registrarPaciente(datosPaciente)
+      .then((nuevoPaciente) => {
+        setPacientes([...pacientes, nuevoPaciente]);
+        // oculta el formulario despues de registrar
+        setMostrarFormulario(false);
+        // muestra la lista para ver al paciente nuevo
+        setPestanaActiva('pacientes');
+      })
+      // si el servidor rechaza al paciente se muestra el motivo
+      .catch((error) => alert(error.message));
   };
 
   // registra un nuevo ingreso de una mascota que ya tiene ficha
@@ -108,7 +112,7 @@ function App() {
   return (
     <div className="contenedor-principal">
       <header className="cabecera">
-        <h1>Sistema de Información - VetPenguin pruebaaaaa</h1>
+        <h1>Sistema de Información - VetPenguin</h1>
         <p>Plataforma de control y seguimiento de pacientes</p>
       </header>
 
