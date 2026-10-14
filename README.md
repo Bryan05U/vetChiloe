@@ -53,6 +53,59 @@ flowchart TD
 | Servicios (back) | `server/services/pacientes.js` | Regla de negocio: valida que la especie exista en el catálogo compartido con el formulario y genera el N° de atención. |
 | Repositorios | `server/repositories/pacientes.js` | Único lugar que sabe dónde viven los datos. Hoy un arreglo en memoria; mañana PostgreSQL. |
 
+## 📁 Estructura del repositorio
+
+```text
+vetChiloe/
+├── src/                              # Frontend · React + Vite
+│   ├── components/                   # Presentación: solo props, sin acceso a datos
+│   │   ├── FlipCard.jsx / .css       · animación de giro reutilizable
+│   │   ├── TablaPacientes.jsx / .css · listado de pacientes
+│   │   ├── FormularioPaciente.jsx / .css · alta con validación
+│   │   └── TarjetaPaciente.jsx / .css    · carnet del paciente
+│   ├── data/
+│   │   └── pacientesMock.js          · semilla de la Parte A (ya no la importa nadie)
+│   ├── services/
+│   │   └── pacienteService.js        · único punto de contacto con la API
+│   ├── utils/
+│   │   └── validaciones.js           · reglas del formulario + catálogo ESPECIES
+│   ├── assets/                       · imágenes del template de Vite
+│   ├── App.jsx                       · composición: carga el listado en useEffect
+│   ├── App.css
+│   ├── index.css
+│   └── main.jsx
+│
+├── server/                           # Backend · Express en el puerto 3000
+│   ├── routes/
+│   │   └── pacientes.js              · GET · POST /api/pacientes
+│   ├── controllers/
+│   │   └── pacientes.js              · traduce HTTP ↔ dominio: 200 / 201 / 400
+│   ├── services/
+│   │   └── pacientes.js              · regla de negocio + N° de atención
+│   ├── repositories/
+│   │   └── pacientes.js              · almacenamiento: arreglo en memoria
+│   ├── index.js                      · app Express: cors, json, monta las rutas
+│   ├── package.json                  · dependencias propias: express, cors
+│   └── package-lock.json
+│
+├── public/
+│   ├── pets/                         · fotos de los pacientes (URL plana)
+│   ├── favicon.svg
+│   └── icons.svg
+│
+├── index.html
+├── vite.config.js
+├── eslint.config.js                  · reglas del frontend + bloque Node para server/
+├── package.json                      · dependencias del frontend
+├── package-lock.json
+├── .gitignore
+└── README.md
+```
+
+Dentro de cada capa hay un archivo `pacientes.js` y nada más: la capa de rutas no importa al repositorio, ni el repositorio importa a los controladores. Cada una solo conoce a la que tiene inmediatamente debajo.
+
+Hay **dos `package.json`**, o sea dos paquetes npm independientes: hay que correr `npm install` en la raíz y otra vez dentro de `server/`.
+
 ## ⚙️ Requisitos Previos
 
 * [Node.js](https://nodejs.org/) (incluye npm) instalado en tu computadora local.
