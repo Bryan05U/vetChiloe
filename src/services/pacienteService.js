@@ -1,45 +1,56 @@
-import { pacientesMock } from '../data/pacientesMock.js';
+const API_URL = 'http://localhost:3000/api/pacientes';
 
-let pacientes = [...pacientesMock];
+function especieParaApi(especie) {
+  if (especie === 'Perro') return 'Canino';
+  if (especie === 'Gato') return 'Felino';
+  return especie;
+}
+
+function pacienteParaInterfaz(paciente) {
+  const especie = paciente.especie === 'Canino'
+    ? 'Perro'
+    : paciente.especie === 'Felino'
+      ? 'Gato'
+      : paciente.especie;
+
+  return {
+    ...paciente,
+    especie,
+    edad: typeof paciente.edad === 'number' ? `${paciente.edad} años` : paciente.edad,
+    peso: typeof paciente.peso === 'number' ? `${paciente.peso} kg` : paciente.peso,
+  };
+}
+
+async function solicitar(url, opciones) {
+  const respuesta = await fetch(url, opciones);
+  const resultado = await respuesta.json();
+  if (!respuesta.ok) throw new Error(resultado.error || 'No se pudo completar la solicitud.');
+  return resultado;
+}
+
+function prepararDatos(datos) {
+  return { ...datos, especie: especieParaApi(datos.especie) };
+}
 
 export async function obtenerPacientes() {
-  return [...pacientes];
+  const pacientes = await solicitar(API_URL);
+  return pacientes.map(pacienteParaInterfaz);
 }
 
 export async function registrarPaciente(datos) {
-  const edad = Number(datos.edad);
-  const peso = Number(datos.peso);
-  if (!Number.isFinite(edad) || edad < 0 || !Number.isFinite(peso) || peso < 0) return null;
-
-  const nuevoPaciente = {
-    ...datos,
-    id: Date.now(),
-    edad: `${edad} años`,
-    peso: `${peso} kg`,
-    numero_atencion: `${new Date().getFullYear()}-N${pacientes.length + 1}`,
-    emoji: datos.especie === 'Gato' ? '🐱' : datos.especie === 'Perro' ? '🐶' : '🐾',
-    historial: [{ fecha: new Date().toISOString().slice(0, 10), detalle: 'Paciente registrado.' }],
-  };
-
-  pacientes = [...pacientes, nuevoPaciente];
-  return nuevoPaciente;
+  const paciente = await solicitar(API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(prepararDatos(datos)),
+  });
+  return pacienteParaInterfaz(paciente);
 }
 
 export async function actualizarPaciente(id, datos) {
-  const edad = Number(datos.edad);
-  const peso = Number(datos.peso);
-  if (!Number.isFinite(edad) || edad < 0 || !Number.isFinite(peso) || peso < 0) return null;
-
-  const pacienteActualizado = pacientes.find((paciente) => paciente.id === id);
-  if (!pacienteActualizado) return null;
-
-  const resultado = {
-    ...pacienteActualizado,
-    ...datos,
-    edad: `${edad} años`,
-    peso: `${peso} kg`,
-    emoji: datos.especie === 'Gato' ? '🐱' : datos.especie === 'Perro' ? '🐶' : '🐾',
-  };
-  pacientes = pacientes.map((paciente) => (paciente.id === id ? resultado : paciente));
-  return resultado;
+  const paciente = await solicitar(`${API_URL}/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(prepararDatos(datos)),
+  });
+  return pacienteParaInterfaz(paciente);
 }
