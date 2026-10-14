@@ -1,0 +1,207 @@
+/* Layout Principal */
+.home-dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 20px 0;
+}
+
+/* Bloques / Tarjetas contenedoras */
+.bloque-dashboard {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  border: 1px solid #f0e6eb;
+}
+
+.cabecera-bloque {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.cabecera-bloque h2 {
+  margin: 0;
+  font-size: 1.3rem;
+  color: #3a2e39;
+  font-weight: 700;
+}
+
+/* Badges / Etiquetas de cabecera */
+.badge-fecha,
+.badge-total {
+  background-color: #fdf0f5;
+  color: #c75b80;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+/* Tablas */
+.tabla-responsive {
+  overflow-x: auto;
+}
+
+.tabla-dashboard {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.95rem;
+}
+
+.tabla-dashboard th {
+  padding: 12px 16px;
+  color: #8c7a85;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid #fceef3;
+  text-transform: uppercase;
+}
+
+.tabla-dashboard td {
+  padding: 14px 16px;
+  border-bottom: 1px solid #f8f0f4;
+  color: #4a3e47;
+  vertical-align: middle;
+}
+
+.col-destacada {
+  color: #2b232a;
+}
+
+.nombre-paciente {
+  font-weight: 700;
+  color: #2b232a;
+}
+
+.especie-tag {
+  background-color: #fceef3;
+  color: #c75b80;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: inline-block;
+}
+
+/* Botones de acción en tabla */
+.btn-historial {
+  background-color: #d87093;
+  color: white;
+  border: none;
+  padding: 7px 14px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+}
+
+.btn-historial:hover {
+  background-color: #c75b80;
+  transform: translateY(-1px);
+}
+
+/* Botón Carnet con tono rosado chicle pastel */
+.btn-carnet {
+  background-color: #e88ab5;
+  color: white;
+  border: none;
+  padding: 7px 14px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+}
+
+.btn-carnet:hover {
+  background-color: #d4729f;
+  transform: translateY(-1px);
+}
+
+/* Modal del Carnet */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(43, 35, 42, 0.5);
+  backdrop-filter: blur(3px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-carnet-content {
+  background: white;
+  padding: 24px;
+  border-radius: 20px;
+  max-width: 460px;
+  width: 90%;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+  animation: popIn 0.25s ease-out;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centra el contenido horizontalmente */
+}
+
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.modal-carnet-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  border-bottom: 1px solid #f4e8ee;
+  padding-bottom: 12px;
+}
+
+.modal-carnet-header h3 {
+  margin: 0;
+  color: #3a2e39;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.modal-carnet-body {
+  width: 100%;
+  display: flex;
+  justify-content: center; /* Asegura que TarjetaPaciente quede perfectamente al centro */
+}
+
+.btn-close-modal {
+  background: #f4e8ee;
+  border: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  font-size: 0.9rem;
+  cursor: pointer;
+  color: #7a6372;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.btn-close-modal:hover {
+  background: #e8d5df;
+  color: #3a2e39;
+}

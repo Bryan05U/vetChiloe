@@ -1,6 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
+import TarjetaPaciente from './TarjetaPaciente';
+import './Home.css';
 
-function Home({ pacientes = [], hospitalizados = [], verHistorialMascota }) {
+function Home({ 
+  pacientes = [], 
+  hospitalizados = [], 
+  setPestanaActiva, 
+  setPacienteSeleccionadoHistorial 
+}) {
+  const [pacienteCarnetModal, setPacienteCarnetModal] = useState(null);
+
   const agendaHoy = pacientes.slice(0, 4).map((paciente, index) => {
     const horarios = ["09:00 horas", "10:30 horas", "12:00 horas", "15:00 horas"];
     const motivos = [
@@ -11,6 +20,7 @@ function Home({ pacientes = [], hospitalizados = [], verHistorialMascota }) {
     ];
 
     return {
+      rawPaciente: paciente,
       id: paciente.id,
       hora: horarios[index] || `${9 + index}:00 horas`,
       paciente: paciente.nombre,
@@ -18,6 +28,17 @@ function Home({ pacientes = [], hospitalizados = [], verHistorialMascota }) {
       motivo: motivos[index % motivos.length]
     };
   });
+
+  const handleIrAHistorial = (paciente) => {
+    // 1. Guardamos el paciente seleccionado para la ficha del historial
+    if (setPacienteSeleccionadoHistorial) {
+      setPacienteSeleccionadoHistorial(paciente);
+    }
+    // 2. Cambiamos la vista a la pestaña 'historial'
+    if (setPestanaActiva) {
+      setPestanaActiva('historial');
+    }
+  };
 
   return (
     <div className="home-dashboard">
@@ -37,6 +58,7 @@ function Home({ pacientes = [], hospitalizados = [], verHistorialMascota }) {
                 <th>PACIENTE</th>
                 <th>ESPECIE</th>
                 <th>MOTIVO DE CONSULTA</th>
+                <th>HISTORIAL CLÍNICO</th>
                 <th>ACCIÓN</th>
               </tr>
             </thead>
@@ -51,16 +73,24 @@ function Home({ pacientes = [], hospitalizados = [], verHistorialMascota }) {
                     <td>
                       <button 
                         className="btn-historial"
-                        onClick={() => verHistorialMascota && verHistorialMascota(cita.id)}
+                        onClick={() => handleIrAHistorial(cita.rawPaciente)}
                       >
                         Historial Clínico
+                      </button>
+                    </td>
+                    <td>
+                      <button 
+                        className="btn-carnet"
+                        onClick={() => setPacienteCarnetModal(cita.rawPaciente)}
+                      >
+                        Carnet
                       </button>
                     </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="5" style={{ textAlign: 'center', color: '#6e5d65' }}>
+                  <td colSpan="6" style={{ textAlign: 'center', color: '#6e5d65' }}>
                     No hay pacientes agendados para hoy.
                   </td>
                 </tr>
@@ -117,6 +147,26 @@ function Home({ pacientes = [], hospitalizados = [], verHistorialMascota }) {
           </table>
         </div>
       </section>
+
+      {/* MODAL CARNET DE IDENTIFICACIÓN VETERINARIA */}
+      {pacienteCarnetModal && (
+        <div className="modal-overlay" onClick={() => setPacienteCarnetModal(null)}>
+          <div className="modal-carnet-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-carnet-header">
+              <h3>Carnet de Identificación Veterinaria</h3>
+              <button
+                className="btn-close-modal"
+                onClick={() => setPacienteCarnetModal(null)}
+              >
+                ✕
+              </button>
+            </div>
+            <div className="modal-carnet-body">
+              <TarjetaPaciente paciente={pacienteCarnetModal} />
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );
