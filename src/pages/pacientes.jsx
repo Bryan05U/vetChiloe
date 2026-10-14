@@ -8,7 +8,6 @@ import TablaPacientes from "../components/tablaPacientes";
 export default function Pacientes() {
     const [isOpen, setIsOpen] = useState(false);
 
-    // 1. Cargamos los datos: si hay algo en localStorage lo usa, si no, carga tu archivo json inicial
     const [pacientes, setPacientes] = useState(() => {
         const guardados = localStorage.getItem("pacientes_vet");
         return guardados ? JSON.parse(guardados) : pacientesIniciales;

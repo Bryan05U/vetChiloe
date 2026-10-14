@@ -1,9 +1,9 @@
 // App.jsx
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Landing from './routes/landing'; 
-import Home from './routes/home';
+import Landing from './pages/landing'; 
+import Home from './pages/home';
 import Layout from './layout/layout';
-import Pacientes from './routes/pacientes';
+import Pacientes from './pages/pacientes';
 function App() {
   return (
     <BrowserRouter basename={import.meta.env.BASE_URL.replace(/\/$/, '')}>
