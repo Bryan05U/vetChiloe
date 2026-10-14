@@ -1,4 +1,4 @@
-# Sistema de Información: Veterinaria Chiloé
+# VetPenguin: Sistema de Información Veterinaria Chiloé
 
 Una aplicación web moderna y responsiva diseñada para gestionar y realizar el seguimiento de los datos de pacientes en clínicas veterinarias. Este proyecto sirve como base educativa para construir interfaces web escalables utilizando el ecosistema moderno de JavaScript, utilizando React.
 
