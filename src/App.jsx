@@ -3,59 +3,45 @@ import './App.css';
 import TablaPacientes from './components/TablaPacientes';
 import TarjetaPaciente from './components/TarjetaPaciente';
 import FormularioPaciente from './components/FormularioPaciente';
-import imgFelipe from './assets/pets/Charkicito.webp';
-import imgMaxi from './assets/pets/Mercedes.webp';
-import imgHannita from './assets/pets/Hannita.webp';
-
-const PACIENTES_INICIALES = [
-  {
-    id: 1,
-    nombre: 'Felipe',
-    especie: 'Felino',
-    peso: 4.5,
-    dueno: '11111111-1',
-    telefono: '+56912345678',
-    numero_atencion: '2026-A1',
-    edad: 5,
-    diagnostico: 'Otitis externa (oído derecho)',
-    ultima_visita: '2026-01-15',
-    imagen: imgFelipe,
-  },
-  {
-    id: 2,
-    nombre: 'Maxi',
-    especie: 'Felino',
-    peso: 3.2,
-    dueno: '22222222-2',
-    telefono: '+56987654321',
-    numero_atencion: '2026-B2',
-    edad: 8,
-    diagnostico: 'Insuficiencia renal crónica - en control',
-    ultima_visita: '2026-02-20',
-    imagen: imgMaxi,
-  },
-  {
-    id: 3,
-    nombre: 'Hannita',
-    especie: 'Canino',
-    peso: 12.0,
-    dueno: '33333333-3',
-    telefono: '+56922334455',
-    numero_atencion: '2026-C3',
-    edad: 3,
-    diagnostico: 'Dermatitis alérgica estacional',
-    ultima_visita: '2026-03-10',
-    imagen: imgHannita,
-  },
-];
+import {
+  obtenerPacientes,
+  registrarPaciente,
+} from './services/pacienteService';
 
 function App() {
-  const [pacientes, setPacientes] = useState(PACIENTES_INICIALES);
+  const [pacientes, setPacientes] = useState([]);
+  const [cargando, setCargando] = useState(true);
+  const [error, setError] = useState(null);
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [pacienteCarnet, setPacienteCarnet] = useState(null);
 
-  const agregarPacientes = (datosPaciente) => {
-    setPacientes((previos) => [...previos, { ...datosPaciente, id: Date.now() }]);
+  // `activo` descarta la respuesta si el componente se desmonta antes
+  // (StrictMode monta dos veces en desarrollo).
+  useEffect(() => {
+    let activo = true;
+
+    obtenerPacientes()
+      .then((datos) => {
+        if (!activo) return;
+        setPacientes(datos);
+        setError(null);
+      })
+      .catch((fallo) => {
+        if (!activo) return;
+        setError(fallo.message ?? 'No se pudo cargar el listado.');
+      })
+      .finally(() => {
+        if (activo) setCargando(false);
+      });
+
+    return () => {
+      activo = false;
+    };
+  }, []);
+
+  const agregarPacientes = async (datosPaciente) => {
+    const pacienteRegistrado = await registrarPaciente(datosPaciente);
+    setPacientes((previos) => [...previos, pacienteRegistrado]);
   };
 
   const cerrarFormulario = () => setMostrarFormulario(false);
@@ -98,7 +84,17 @@ function App() {
       <main>
         <h2>Lista de Pacientes Registrados</h2>
 
-        <TablaPacientes pacientes={pacientes} onVerFicha={onVerFicha} />
+        {cargando && <p className="tabla-vacia">Cargando pacientes…</p>}
+
+        {error && (
+          <p className="tabla-vacia" role="alert">
+            {error}
+          </p>
+        )}
+
+        {!cargando && !error && (
+          <TablaPacientes pacientes={pacientes} onVerFicha={onVerFicha} />
+        )}
       </main>
 
       <button
