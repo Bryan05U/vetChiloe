@@ -1,22 +1,27 @@
-import { PACIENTES_MOCK } from '../data/pacientesMock';
+// La API es la única fuente de datos: ninguna función de aquí resuelve
+// información por su cuenta, solo transporta la petición HTTP y normaliza
+// los errores del servidor.
+const BASE_URL = 'http://localhost:3000/api/pacientes';
 
-// Simula la latencia de red para no esconder los estados de carga.
-const LATENCIA_MS = 400;
+const pedir = async (url, opciones) => {
+  const respuesta = await fetch(url, opciones);
+  const cuerpo = await respuesta.json().catch(() => null);
 
-// Hace de "servidor": la fuente de verdad es el servicio, no App.jsx.
-let pacientes = PACIENTES_MOCK.map((paciente) => ({ ...paciente }));
+  if (!respuesta.ok) {
+    throw new Error(cuerpo?.error ?? `La API respondió con un error ${respuesta.status}.`);
+  }
 
-const simularRespuesta = (datos) =>
-  new Promise((resolve) => {
-    setTimeout(() => resolve(datos), LATENCIA_MS);
-  });
+  return cuerpo;
+};
 
 export function obtenerPacientes() {
-  return simularRespuesta(pacientes.map((paciente) => ({ ...paciente })));
+  return pedir(BASE_URL);
 }
 
 export function registrarPaciente(paciente) {
-  const pacienteRegistrado = { ...paciente, id: Date.now() };
-  pacientes = [...pacientes, pacienteRegistrado];
-  return simularRespuesta({ ...pacienteRegistrado });
+  return pedir(BASE_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(paciente),
+  });
 }
