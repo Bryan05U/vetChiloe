@@ -54,3 +54,8 @@ export function registrarPaciente(paciente) {
     }, DEMORA);
   });
 }
+
+// guarda la lista completa, se usa al eliminar, dar de alta o reingresar
+export function guardarPacientes(lista) {
+  localStorage.setItem('pacientes', JSON.stringify(lista));
+}

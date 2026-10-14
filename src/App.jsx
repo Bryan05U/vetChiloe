@@ -5,7 +5,7 @@ import FormularioPaciente from './components/FormularioPaciente';
 import DetallePaciente from './components/DetallePaciente';
 import TablaPacientes from './components/TablaPacientes';
 import BarraPestanas from './components/BarraPestanas';
-import { obtenerPacientes, registrarPaciente } from './services/pacienteService';
+import { obtenerPacientes, registrarPaciente, guardarPacientes } from './services/pacienteService';
 import razasPorEspecie from './data/Razas';
 
 function App() {
@@ -39,7 +39,7 @@ function App() {
     if (cargando) return;
 
     try {
-      localStorage.setItem('pacientes', JSON.stringify(pacientes));
+      guardarPacientes(pacientes);
     } catch (error) {
       alert('No queda espacio para guardar. Elimina pacientes o usa fotos mas livianas.');
     }
