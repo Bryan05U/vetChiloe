@@ -1,6 +1,7 @@
 import * as repositorio from '../repositories/pacientes.js';
 
-export const ESPECIES_VALIDAS = ['Felino', 'Canino'];
+// Debe coincidir con ESPECIES de src/utils/validaciones.js (formulario).
+export const ESPECIES_VALIDAS = ['Canino', 'Felino', 'Ave', 'Roedor', 'Reptil', 'Otro'];
 
 export class ErrorValidacion extends Error {
   constructor(mensaje) {
@@ -27,7 +28,7 @@ export function registrarPaciente(datos) {
   const especie = typeof datos?.especie === 'string' ? datos.especie.trim() : '';
   if (!ESPECIES_VALIDAS.includes(especie)) {
     throw new ErrorValidacion(
-      `La especie debe ser ${ESPECIES_VALIDAS.join(' o ')}. Se recibió: ${datos?.especie ?? 'vacío'}.`,
+      `La especie debe ser una de: ${ESPECIES_VALIDAS.join(', ')}. Se recibió: ${datos?.especie ?? 'vacío'}.`,
     );
   }
 
