@@ -1,4 +1,4 @@
-import { getDataPacientes, insertData } from "../service/server/pacientes.service";
+import { getDataPacientes,insertDataPacientes } from "../service/server/pacientes.service.js";
 
 
 export async function getPacientes(req, res) {
@@ -13,7 +13,7 @@ export async function getPacientes(req, res) {
 }
 export async function postPaciente (req, res) {
     try {
-        const nuevoPaciente = await insertData(req.body);
+        const nuevoPaciente = await insertDataPacientes(req.body);
         res.status(200).json(nuevoPaciente)
     }
     catch (err) {
