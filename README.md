@@ -21,6 +21,30 @@ Este proyecto se enmarca dentro de la asignatura de Tecnologías Web y Móviles 
 
 La interfaz se comunica con la API mediante `src/data/pacienteApi.js`. Ejecuta `npm run dev` para iniciar la aplicación y la API local. Los pacientes registrados se guardan en el archivo JSON y permanecen al reiniciar el servidor. Las imágenes subidas se almacenan como data URL dentro de ese JSON. El repositorio podrá reemplazarse en el futuro por PostgreSQL sin acoplar la interfaz a la base de datos.
 
+### Diagrama de capas
+
+```mermaid
+flowchart LR
+    usuario[Usuario]
+    presentacion["Presentación<br/>React + Vite<br/>src/App.jsx y componentes"]
+    rutas["Rutas<br/>Express<br/>server/routes"]
+    controladores["Controladores<br/>Express<br/>server/controllers"]
+    servicios["Servicios / lógica de negocio<br/>server/business"]
+    repositorios["Repositorios / acceso a datos<br/>server/data"]
+    json[("Base de datos JSON<br/>src/data/pacientes.json")]
+
+    usuario -->|"Usa la interfaz"| presentacion
+    presentacion -->|"HTTP: GET / POST"| rutas
+    rutas -->|"Enruta la petición"| controladores
+    controladores -->|"req.body / consulta"| servicios
+    servicios -->|"Valida y aplica reglas"| repositorios
+    repositorios -->|"Lee y escribe"| json
+    json -.->|"Paciente guardado"| repositorios
+    repositorios -.->|"Paciente creado"| servicios
+    servicios -.->|"Resultado"| controladores
+    controladores -.->|"Respuesta HTTP"| presentacion
+```
+
 ### Probar la API con Thunder Client
 
 Con `npm run dev` ejecutándose, envía solicitudes a `http://localhost:3001`:
