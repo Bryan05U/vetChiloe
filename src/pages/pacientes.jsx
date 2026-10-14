@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import GradientBorderButton from "../components/ui/GradientButton";
 import FormularioPaciente from "../components/FormularioPaciente";
 import Modal from "../components/ui/Modal";
-import pacientesIniciales from "../data/pacientes.json"; // Tu JSON inicial
+import pacientesIniciales from "../data/pacientes.js"; 
 import TablaPacientes from "../components/tablaPacientes";
 
 export default function Pacientes() {
