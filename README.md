@@ -8,8 +8,50 @@ Este proyecto se enmarca dentro de la asignatura de Tecnologías Web y Móviles 
 
 * **Frontend:** React + Vite
 * **Estilos:** CSS (App.css)
-* **Backend (Planificado):** Node.js
+* **Backend:** Node.js + Express
 * **Base de Datos (Planificada):** PostgreSQL
+
+## 🧱 Arquitectura en N-Capas
+
+Cada capa tiene una sola responsabilidad y solo conoce a la que tiene inmediatamente debajo. Una petición atraviesa el sistema así:
+
+```mermaid
+flowchart TD
+    subgraph FE["Frontend · React + Vite (5173)"]
+        COMP["Componentes<br/>TablaPacientes · FormularioPaciente · TarjetaPaciente<br/><i>solo reciben props, no conocen datos</i>"]
+        SVC["Servicios<br/>src/services/pacienteService.js<br/><i>obtenerPacientes() · registrarPaciente()</i>"]
+        COMP --> SVC
+    end
+
+    subgraph BE["Backend · Express (3000)"]
+        RUT["Rutas<br/>server/routes/pacientes.js<br/><i>GET · POST /api/pacientes</i>"]
+        CTL["Controladores<br/>server/controllers/pacientes.js<br/><i>traduce HTTP ↔ dominio, 200 / 201 / 400</i>"]
+        SRV["Servicios<br/>server/services/pacientes.js<br/><i>regla de negocio: especie Felino o Canino,<br/>genera el N° de atención</i>"]
+        REP["Repositorios<br/>server/repositories/pacientes.js<br/><i>único lugar que conoce el almacenamiento</i>"]
+        RUT --> CTL --> SRV --> REP
+    end
+
+    SVC -->|"fetch HTTP · JSON"| RUT
+    REP -.->|"se conectará aquí, sin tocar las capas de arriba"| PG[("PostgreSQL<br/>planificado")]
+
+    classDef fe fill:#e8f0fe,stroke:#4285f4,color:#111
+    classDef be fill:#e6f4ea,stroke:#34a853,color:#111
+    classDef db fill:#fef7e0,stroke:#f9ab00,color:#111
+    class COMP,SVC fe
+    class RUT,CTL,SRV,REP be
+    class PG db
+```
+
+### Qué hace cada capa
+
+| Capa | Archivo | Responsabilidad |
+| --- | --- | --- |
+| Componentes | `src/components/*.jsx` | Mostrar información. Reciben todo por props y no obtienen datos por su cuenta. |
+| Servicios (front) | `src/services/pacienteService.js` | Único punto de contacto con la API. Es lo único que cambió al conectar el backend. |
+| Rutas | `server/routes/pacientes.js` | Mapea método + URL a un controlador. No tiene lógica. |
+| Controladores | `server/controllers/pacientes.js` | Traduce HTTP a dominio: lee `req.body`, responde 200/201 y convierte un error de validación en 400. |
+| Servicios (back) | `server/services/pacientes.js` | Regla de negocio: valida que la especie sea Felino o Canino y genera el N° de atención. |
+| Repositorios | `server/repositories/pacientes.js` | Único lugar que sabe dónde viven los datos. Hoy un arreglo en memoria; mañana PostgreSQL. |
 
 ## ⚙️ Requisitos Previos
 
@@ -20,3 +62,56 @@ Este proyecto se enmarca dentro de la asignatura de Tecnologías Web y Móviles 
 1. Clona el repositorio:
    ```bash
    git clone https://github.com/Vikktor93/vetChiloe
+   cd vetChiloe
+   ```
+
+2. Instala las dependencias del frontend:
+   ```bash
+   npm install
+   ```
+
+3. Instala las dependencias del backend:
+   ```bash
+   cd server
+   npm install
+   cd ..
+   ```
+
+## ▶️ Cómo ejecutar
+
+Hacen falta **dos terminales**, porque el frontend y la API son procesos distintos.
+
+Terminal 1 — la API en http://localhost:3000:
+
+```bash
+cd server
+npm run dev
+```
+
+Terminal 2 — la interfaz en http://localhost:5173:
+
+```bash
+npm run dev
+```
+
+Si la API no está levantada, la tabla del frontend mostrará un error de carga en vez del listado.
+
+## 🔌 Endpoints
+
+Base: `http://localhost:3000/api/pacientes`
+
+| Método | Ruta | Respuesta |
+| --- | --- | --- |
+| GET | `/api/pacientes` | `200` — arreglo con todos los pacientes |
+| POST | `/api/pacientes` | `201` — el paciente creado, con `id` y `numero_atencion` emitidos por el servidor |
+| POST | `/api/pacientes` con especie fuera de Felino/Canino | `400` — `{ "error": "..." }` |
+
+Ejemplo de alta:
+
+```bash
+curl -X POST http://localhost:3000/api/pacientes \
+  -H 'Content-Type: application/json' \
+  -d '{"nombre":"Rocky","especie":"Canino","peso":9.4,"dueno":"12345678-9","telefono":"+56911112222","edad":4,"ultima_visita":"2026-04-01"}'
+```
+
+El `numero_atencion` que envíe el cliente se ignora: lo emite el servidor con el formato `AAAA-NNN` (por ejemplo `2026-004`).
