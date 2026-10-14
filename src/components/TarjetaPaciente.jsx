@@ -1,4 +1,5 @@
 import FlipCard from './FlipCard';
+import './TarjetaPaciente.css';
 
 const formatearFecha = (fechaISO) => {
   if (!fechaISO) return '—';
@@ -7,8 +8,7 @@ const formatearFecha = (fechaISO) => {
   return `${dia}/${mes}/${anio}`;
 };
 
-function TarjetaPaciente(props) {
-  const { paciente } = props;
+function TarjetaPaciente({ paciente, mostrarReverso = false }) {
 
   const frente = paciente.imagen ? (
     <img
@@ -43,6 +43,7 @@ function TarjetaPaciente(props) {
       <p><strong>Teléfono:</strong> {paciente.telefono}</p>
       <p><strong>Edad:</strong> {paciente.edad}</p>
       <p><strong>Última visita:</strong> {formatearFecha(paciente.ultima_visita)}</p>
+      <p><strong>Diagnóstico:</strong> {paciente.diagnostico ?? 'Sin registro'}</p>
     </div>
   );
   return (
@@ -50,6 +51,7 @@ function TarjetaPaciente(props) {
       ariaLabel={`Paciente ${paciente.nombre}`}
       front={frente}
       back={reverso}
+      defaultFlipped={mostrarReverso}
     />
   );
 }

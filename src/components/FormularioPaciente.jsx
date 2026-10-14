@@ -15,7 +15,7 @@ import {
   validarPaciente,
 } from '../utils/validaciones';
 
-function FormularioPaciente({ onAgregarPacientes }) {
+function FormularioPaciente({ onAgregarPacientes, onCerrar }) {
   const [nombre, setNombre] = useState('');
   const [especie, setEspecie] = useState('');
   const [peso, setPeso] = useState('');
@@ -132,6 +132,7 @@ function FormularioPaciente({ onAgregarPacientes }) {
     });
 
     limpiarFormulario();
+    onCerrar?.();
   };
 
   const propsCampo = (campo, extra = '') => ({
@@ -151,7 +152,7 @@ function FormularioPaciente({ onAgregarPacientes }) {
 
   return (
     <section className="formulario-paciente" id="formulario-paciente">
-      <h2>Registro de Nuevo Paciente</h2>
+      <h2 id="titulo-modal">Registro de Nuevo Paciente</h2>
 
       <form onSubmit={manejarSubmit} autoComplete="off" noValidate>
         <div {...propsCampo('nombre')}>

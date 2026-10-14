@@ -1,0 +1,187 @@
+/* ── Contenedor responsive ────────────────────────────────────────────────
+   Desbordamiento horizontal controlado: la tabla conserva su ancho mínimo
+   legible y se desplaza dentro de este contenedor en pantallas angostas,
+   en lugar de desbordar la página completa. */
+.tabla-contenedor {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  margin: 0 24px 48px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--bg);
+  box-shadow: var(--shadow);
+}
+
+.tabla-contenedor:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* ── Tabla ──────────────────────────────────────────────────────────────── */
+.tabla-pacientes {
+  width: 100%;
+  min-width: 780px;
+  border-collapse: collapse;
+  font-size: 15px;
+  line-height: 135%;
+  text-align: left;
+}
+
+.tabla-pacientes th,
+.tabla-pacientes td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.tabla-pacientes thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-h);
+  background: var(--code-bg);
+}
+
+.tabla-pacientes tbody th[scope='row'] {
+  font-weight: 600;
+  color: var(--text-h);
+}
+
+.tabla-pacientes tbody tr:last-child th,
+.tabla-pacientes tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.tabla-pacientes tbody tr {
+  transition: background-color 0.15s;
+}
+
+.tabla-pacientes tbody tr:hover {
+  background: var(--accent-bg);
+}
+
+.celda-codigo {
+  font-family: var(--mono);
+  font-size: 14px;
+  color: var(--text-h);
+}
+
+.celda-diagnostico {
+  white-space: normal;
+  min-width: 220px;
+  color: var(--text);
+}
+
+/* ── Etiquetas (badges) por especie ─────────────────────────────────────── */
+.badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.badge--felino {
+  color: #b45309;
+  background: rgba(249, 115, 22, 0.14);
+  border-color: rgba(249, 115, 22, 0.4);
+}
+
+.badge--canino {
+  color: #1d4ed8;
+  background: rgba(59, 130, 246, 0.14);
+  border-color: rgba(59, 130, 246, 0.4);
+}
+
+.badge--ave {
+  color: #047857;
+  background: rgba(16, 185, 129, 0.14);
+  border-color: rgba(16, 185, 129, 0.4);
+}
+
+.badge--roedor {
+  color: #7e22ce;
+  background: rgba(168, 85, 247, 0.14);
+  border-color: rgba(168, 85, 247, 0.4);
+}
+
+.badge--reptil {
+  color: #4d7c0f;
+  background: rgba(132, 204, 22, 0.16);
+  border-color: rgba(132, 204, 22, 0.4);
+}
+
+.badge--otro {
+  color: var(--text);
+  background: var(--social-bg);
+  border-color: var(--border);
+}
+
+@media (prefers-color-scheme: dark) {
+  .badge--felino {
+    color: #fdba74;
+  }
+
+  .badge--canino {
+    color: #93c5fd;
+  }
+
+  .badge--ave {
+    color: #6ee7b7;
+  }
+
+  .badge--roedor {
+    color: #d8b4fe;
+  }
+
+  .badge--reptil {
+    color: #bef264;
+  }
+}
+
+/* ── Botón de acción ────────────────────────────────────────────────────── */
+.btn-ver-carnet {
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--accent-bg);
+  border: 1px solid var(--accent-border);
+  border-radius: 8px;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition:
+    filter 0.2s,
+    transform 0.1s;
+}
+
+.btn-ver-carnet:hover {
+  filter: brightness(1.08);
+}
+
+.btn-ver-carnet:active {
+  transform: translateY(1px);
+}
+
+.btn-ver-carnet:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* ── Estado vacío ───────────────────────────────────────────────────────── */
+.tabla-vacia {
+  margin: 0 24px 48px;
+  padding: 28px 24px;
+  border: 1px dashed var(--border);
+  border-radius: 14px;
+  color: var(--text);
+}

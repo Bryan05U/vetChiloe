@@ -183,36 +183,157 @@
   }
 }
 
-.acciones {
-  display: flex;
-  justify-content: center;
-  margin: 0 0 28px;
-}
-
-.btn-nuevo-paciente {
+.boton-flotante {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 40;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
   font: inherit;
   font-size: 16px;
   font-weight: 600;
-  color: var(--accent);
-  background: var(--accent-bg);
-  border: 1px solid var(--accent-border);
-  border-radius: 10px;
-  padding: 13px 26px;
+  color: var(--bg);
+  background: var(--accent);
+  border: none;
+  border-radius: 999px;
+  padding: 16px 26px;
   cursor: pointer;
+  box-shadow: var(--shadow);
   transition:
     filter 0.2s,
-    transform 0.1s;
+    transform 0.1s,
+    box-shadow 0.2s;
 }
 
-.btn-nuevo-paciente:hover {
-  filter: brightness(1.08);
+.boton-flotante span[aria-hidden] {
+  font-size: 22px;
+  line-height: 1;
 }
 
-.btn-nuevo-paciente:active {
+.boton-flotante:hover {
+  filter: brightness(1.1);
+  box-shadow:
+    var(--shadow),
+    0 0 0 6px var(--accent-bg);
+}
+
+.boton-flotante:active {
   transform: translateY(1px);
 }
 
-.btn-nuevo-paciente:focus-visible {
+.boton-flotante:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 3px;
+}
+
+.modal-fondo {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgb(0 0 0 / 0.6);
+  backdrop-filter: blur(2px);
+  animation: modal-aparecer 0.18s ease-out;
+}
+
+.modal-contenido {
+  position: relative;
+  width: min(760px, 100%);
+  max-height: 90vh;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+.modal-contenido .formulario-paciente {
+  margin-bottom: 0;
+}
+
+.modal-cerrar {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 1;
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  font: inherit;
+  font-size: 26px;
+  line-height: 1;
+  color: var(--text-h);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  cursor: pointer;
+  transition:
+    border-color 0.2s,
+    color 0.2s;
+}
+
+.modal-cerrar:hover {
+  border-color: var(--accent-border);
+  color: var(--accent);
+}
+
+.modal-cerrar:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@keyframes modal-aparecer {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .modal-fondo {
+    animation: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .boton-flotante {
+    right: 16px;
+    bottom: 16px;
+    padding: 14px 20px;
+  }
+
+  .modal-fondo {
+    padding: 12px;
+  }
+
+  .modal-contenido {
+    max-height: 94vh;
+  }
+}
+
+/* ── Modal del carnet (reutiliza la FlipCard de TarjetaPaciente) ─────────── */
+.modal-contenido--carnet {
+  width: min(400px, 100%);
+  padding: 30px 24px 20px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+  text-align: center;
+}
+
+.carnet-visual {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0 14px;
+}
+
+.carnet-ayuda {
+  font-size: 14px;
+  color: var(--text);
 }
