@@ -111,10 +111,6 @@ vetChiloe/
 └── README.md
 ```
 
-## 👥 Flujo de Trabajo Colaborativo
-
-Este proyecto utiliza la metodología Feature Branch Workflow. Está prohibido hacer commits directos a la rama `main`. Cada estudiante trabaja en su propia rama con la nomenclatura `estudiante/nombre-apellido`, y las integraciones se evalúan mediante Pull Requests.
-
 ## ⚙️ Requisitos Previos
 
 * [Node.js](https://nodejs.org/) (incluye npm) instalado en tu computadora local.
@@ -145,16 +141,3 @@ Este proyecto utiliza la metodología Feature Branch Workflow. Está prohibido h
    Queda funcionando en `http://localhost:5173`.
 
 > El `--legacy-peer-deps` es necesario porque `react-card-flip` todavía pide React 18.
-
-## 🗺️ Roadmap del Proyecto
-
-- [x] Fase 1: Configuración inicial (Vite) y componentización estática.
-- [x] Fase 2: Integración de bibliotecas e interacciones 3D (react-card-flip).
-- [x] Fase 3: Levantamiento de estado, formularios controlados y renderizado de tablas.
-- [ ] Fase 4: Mejoras de UX (búsqueda en tiempo real, validaciones, empty states, skeleton loaders).
-- [x] Fase 5: API RESTful con Node.js y Express.js en N-Capas (GET y POST de pacientes).
-- [ ] Fase 6: Modelado y conexión a base de datos relacional (PostgreSQL).
-
-## 📄 Licencia
-
-Este proyecto está bajo la Licencia MIT.
