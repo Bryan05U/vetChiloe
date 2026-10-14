@@ -3,6 +3,7 @@ import * as XLSX from 'xlsx';
 import { TablaPacientes } from './components/TablaPacientes';
 import { PacienteCard } from './components/PacienteCard';
 import { FormularioPaciente } from './components/FormularioPaciente';
+import { pacienteService } from './services/pacienteService';
 import './App.css';
 
 function LogoAegis() {
@@ -26,87 +27,39 @@ function LogoAegis() {
   );
 }
 
-const PACIENTES_INICIALES = [
-  {
-    id: 1,
-    nombre: 'Atenea',
-    numero_atencion: '2026-A1',
-    especie: 'Felino',
-    raza: 'Común Europeo / Mestizo',
-    edad: '2 años y 4 meses',
-    edadAnios: 2,
-    edadMeses: 4,
-    peso: '3.8 kg',
-    nombreDueno: 'Vicente Garín',
-    rutDueno: '21.345.678-9',
-    foto: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=500&auto=format&fit=crop',
-    motivo: 'Control de vacunas y ecografía preventiva.'
-  },
-  {
-    id: 2,
-    nombre: 'Afrodita',
-    numero_atencion: '2026-A2',
-    especie: 'Felino',
-    raza: 'Siamés',
-    edad: '1 año y 8 meses',
-    edadAnios: 1,
-    edadMeses: 8,
-    peso: '3.2 kg',
-    nombreDueno: 'Vicente Garín',
-    rutDueno: '21.345.678-9',
-    foto: 'https://images.unsplash.com/photo-1573865526739-10659fec78a5?w=500&auto=format&fit=crop',
-    motivo: 'Limpieza bucal y desparasitación periódica.'
-  },
-  {
-    id: 3,
-    nombre: 'Goliath',
-    numero_atencion: '2026-A3',
-    especie: 'Canino',
-    raza: 'Quiltro / Mestizo',
-    edad: '4 años',
-    edadAnios: 4,
-    edadMeses: 0,
-    peso: '32 kg',
-    nombreDueno: 'Vicente Garín',
-    rutDueno: '21.345.678-9',
-    foto: 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=500&auto=format&fit=crop',
-    motivo: 'Revisión traumatológica y refuerzo óseo.'
-  }
-];
-
 function App() {
-  const [pacientes, setPacientes] = useState(() => {
-    const guardados = localStorage.getItem('aegisvet_pacientes');
-    if (guardados) {
-      try {
-        return JSON.parse(guardados);
-      } catch (e) {
-        return PACIENTES_INICIALES;
-      }
-    }
-    return PACIENTES_INICIALES;
-  });
-
+  const [pacientes, setPacientes] = useState([]);
+  const [cargando, setCargando] = useState(true);
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [pacienteCarnet, setPacienteCarnet] = useState(null);
   const [pacienteAEliminar, setPacienteAEliminar] = useState(null);
 
+  // Lámina 127: useEffect para cargar datos al montar
   useEffect(() => {
-    localStorage.setItem('aegisvet_pacientes', JSON.stringify(pacientes));
-  }, [pacientes]);
+    async function cargar() {
+      try {
+        const datos = await pacienteService.obtenerPacientes();
+        setPacientes(datos);
+      } catch (err) {
+        console.error('Error cargando pacientes:', err);
+      } finally {
+        setCargando(false);
+      }
+    }
+    cargar();
+  }, []);
 
   const totalFelinos = pacientes.filter(p => p.especie?.toLowerCase().includes('felino')).length;
   const totalCaninos = pacientes.filter(p => p.especie?.toLowerCase().includes('canino')).length;
 
-  const handleAgregarPaciente = (nuevo) => {
-    const correlativo = `2026-A${pacientes.length + 1}`;
-    const pacienteConCorrelativo = {
-      ...nuevo,
-      numero_atencion: correlativo
-    };
-
-    setPacientes((prev) => [pacienteConCorrelativo, ...prev]);
-    setMostrarFormulario(false);
+  const handleAgregarPaciente = async (nuevo) => {
+    try {
+      const agregado = await pacienteService.registrarPaciente(nuevo);
+      setPacientes((prev) => [agregado, ...prev]);
+      setMostrarFormulario(false);
+    } catch (err) {
+      alert(err.message || 'Error al registrar paciente');
+    }
   };
 
   const handleActualizarPaciente = (actualizado) => {
@@ -196,14 +149,19 @@ function App() {
           </div>
         </div>
 
-        <TablaPacientes
-          pacientes={pacientes}
-          onVerFicha={(p) => setPacienteCarnet(p)}
-          onSolicitarEliminar={(p) => setPacienteAEliminar(p)}
-        />
+        {cargando ? (
+          <div style={{ padding: '3rem', textAlign: 'center', color: '#64748b' }}>
+            <p>Cargando registros clínicos desde la capa de servicios...</p>
+          </div>
+        ) : (
+          <TablaPacientes
+            pacientes={pacientes}
+            onVerFicha={(p) => setPacienteCarnet(p)}
+            onSolicitarEliminar={(p) => setPacienteAEliminar(p)}
+          />
+        )}
       </main>
 
-      {/* FAB Botón Flotante */}
       <button
         type="button"
         className="fab-registrar"
@@ -214,7 +172,6 @@ function App() {
         <span className="fab-icono">+</span>
       </button>
 
-      {/* Modal Formulario */}
       {mostrarFormulario && (
         <div className="modal-backdrop" onClick={() => setMostrarFormulario(false)}>
           <div className="modal-sheet" onClick={(e) => e.stopPropagation()}>
@@ -233,7 +190,6 @@ function App() {
         </div>
       )}
 
-      {/* Modal Carnet Clínico */}
       {pacienteCarnet && (
         <div className="modal-backdrop" onClick={() => setPacienteCarnet(null)}>
           <div className="modal-carnet-container" onClick={(e) => e.stopPropagation()}>
@@ -253,7 +209,6 @@ function App() {
         </div>
       )}
 
-      {/* Modal Eliminar */}
       {pacienteAEliminar && (
         <div className="modal-backdrop" onClick={() => setPacienteAEliminar(null)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
