@@ -1,14 +1,20 @@
 import './TablaPacientes.css';
 
-function TablaPacientes({ pacientes, onVerFicha }) {
+function TablaPacientes({ pacientes, onVerFicha, hayBusqueda = false }) {
   // Si no hay pacientes, se muestra un mensaje amigable
+  
   if (pacientes.length === 0) {
     return (
-      <div className="tabla-vacia">
-        <p>No hay pacientes registrados en el sistema.</p>
+      <div className="tabla-vacia" role="status">
+        <p>
+          {hayBusqueda
+            ? 'No se encontraron pacientes'
+            : 'No hay pacientes registrados en el sistema.'}
+        </p>
       </div>
     );
   }
+
 
   return (
     <div className="contenedor-tabla-responsiva">

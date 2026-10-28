@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import TablaPacientes from './components/TablaPacientes';
+import BuscadorPaciente from './components/BuscadorPaciente';
 import FichaClinica from './components/FichaClinica'; 
 import FormularioPaciente from './components/FormularioPaciente'; 
 import './App.css'; 
@@ -47,6 +48,17 @@ function App() {
   const [pacienteSeleccionado, setPacienteSeleccionado] = useState(null);
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
 
+  const [textoBusqueda, setTextoBusqueda] = useState('');
+
+  const pacientesFiltrados = pacientes.filter((paciente) => {
+    const busqueda = textoBusqueda.trim().toLocaleLowerCase('es');
+
+    return (
+      paciente.nombre.toLocaleLowerCase('es').includes(busqueda) ||
+      paciente.especie.toLocaleLowerCase('es').includes(busqueda)
+    );
+  });
+
   const agregarNuevoPaciente = (nuevoPaciente) => {
     setPacientes([...pacientes, nuevoPaciente]);
     setMostrarFormulario(false);
@@ -76,17 +88,26 @@ function App() {
         <h1>Sistema de Información - Veterinaria Chiloé</h1>
         <p>Plataforma de control y seguimiento de pacientes</p>
       </header>
-
+      
       <main>
         <h2>Pacientes Registrados</h2>
-        
-        {/* Aquí se renderiza la tabla y le pasamos los props */}
-        <TablaPacientes 
-          pacientes={pacientes} 
-          onVerFicha={setPacienteSeleccionado} 
+
+        <BuscadorPaciente
+          textoBusqueda={textoBusqueda}
+          onCambiarBusqueda={setTextoBusqueda}
         />
-        
+
+        <p className="contador-pacientes" aria-live="polite">
+          {pacientesFiltrados.length} de {pacientes.length} pacientes
+        </p>
+
+        <TablaPacientes
+          pacientes={pacientesFiltrados}
+          onVerFicha={setPacienteSeleccionado}
+          hayBusqueda={textoBusqueda.trim() !== ''}
+        />
       </main>
+
 
       {/* Renderizado condicional del formulario modal */}
       {mostrarFormulario && (
